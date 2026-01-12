@@ -41,7 +41,7 @@ export default function () {
   const token = loginRes.json('data.token');
   const authHeaders = {
     'Content-Type': 'application/json',
-    'x-api-key': `Bearer ${token}`, // Middleware auth kamu membaca format ini
+    'x-api-key': `Bearer ${token}`,
   };
 
   sleep(0.5);

@@ -11,7 +11,6 @@ async function createTesters() {
         const BATCH_SIZE = 5000;
         let totalInserted = 0;
 
-        // Looping dari tester 11 sampai 100
         for (let i = 5104; i <= 150000; i++) {
             usersToCreate.push({
                 email: `tester${i}@mail.com`,

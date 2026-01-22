@@ -5,11 +5,10 @@ async function createTesters() {
     try {
         console.log("Memulai pembuatan akun tester massal...");
 
-        // Kita hash password-nya 1 kali saja biar cepat
         const passwordHashed = await bcrypt.hash('password123', 10);
 
         let usersToCreate = [];
-        const BATCH_SIZE = 5000; // Kita cicil masukkan 5.000 akun per pengiriman
+        const BATCH_SIZE = 5000;
         let totalInserted = 0;
 
         // Looping dari tester 11 sampai 100

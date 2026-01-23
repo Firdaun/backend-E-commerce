@@ -16,7 +16,7 @@ async function createTesters() {
                 email: `tester${i}@mail.com`,
                 password: passwordHashed,
                 name: `Tester ${i}`,
-                is_verified: true // Bypass OTP! Langsung set jadi true
+                is_verified: true
             });
 
             if (usersToCreate.length === BATCH_SIZE || i === 150000) {

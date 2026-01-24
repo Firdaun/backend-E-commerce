@@ -28,7 +28,6 @@ async function createTesters() {
                 totalInserted += usersToCreate.length;
                 console.log(`⏳ Sedang memproses... (${totalInserted} / 150000 akun berhasil dibuat)`);
 
-                // Kosongkan array untuk batch selanjutnya
                 usersToCreate = [];
             }
         }

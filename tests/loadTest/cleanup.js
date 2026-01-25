@@ -4,7 +4,6 @@ async function cleanUpTestOrders() {
     try {
         console.log("Memulai penghapusan data hasil test k6...");
 
-        // 1. Hapus OrderItem terlebih dahulu (Sama seperti DELETE FROM OrderItem WHERE ...)
         const deletedItems = await prismaClient.orderItem.deleteMany({
             where: {
                 order: {

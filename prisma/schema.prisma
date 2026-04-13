@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  variant      String   // Menggantikan 'name' sesuai permintaanmu
+  price        Int
+  spice_level  Int      @default(0) // Menggantikan 'flames'
+  description  String?  // Tanda '?' artinya opsional (boleh kosong)
+  image_url    String   // Menggantikan 'image'
+  is_available Boolean  @default(true) // Defaultnya true (tersedia)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relasi: Satu produk bisa dibeli berkali-kali di banyak pesanan (OrderItem)
+  orderItems   OrderItem[]
+}
+
+// 2. TABEL TRANSAKSI (INFORMASI PEMBELI & PENGIRIMAN)
+model Order {
+  id          Int      @id @default(autoincrement())
+  username    String
+  no_wa       String
+  address     String   // Sangat penting untuk patokan pengiriman jarak < 1000m
+  total_price Int
+  status      String   @default("Menunggu") // Status default saat baru pesan
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relasi: Satu struk pesanan (Order) bisa berisi banyak seblak (OrderItem)
+  items       OrderItem[]
+}
+
+// 3. TABEL DETAIL PESANAN (ISI KERANJANG)
+model OrderItem {
+  id                Int     @id @default(autoincrement())
+  orderId           Int     // ID dari tabel Order (Siapa yang pesan)
+  productId         Int     // ID dari tabel Product (Seblak apa yang dibeli)
+  quantity          Int     // Jumlah porsi
+  spice_level       Int     // Pilihan level pedas dari pembeli untuk porsi ini
+  price_at_purchase Int     // Rekaman harga saat beli (jaga-jaga besok harga naik)
+
+  // Menyambungkan (Relasi) kunci-kunci di atas ke tabel aslinya
+  order             Order   @relation(fields: [orderId], references: [id])
+  product           Product @relation(fields: [productId], references: [id])
+}

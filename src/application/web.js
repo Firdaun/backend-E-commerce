@@ -10,7 +10,7 @@ web.use(cors());
 web.use(express.json());
 
 // Rute sementara untuk memastikan web-nya jalan
-web.get('/', (req, res) => {
+web.get('/', (_, res) => {
     res.json({ message: "API Seblak Hot Jeletot Terkoneksi! 🌶️🔥" });
 });
 

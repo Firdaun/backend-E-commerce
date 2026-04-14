@@ -1,8 +1,9 @@
 import { prismaClient } from "../application/database.js"
 import { ResponseError } from "../error/response.error.js"
-import { registerValidation } from "../validation/user.validation.js"
+import { loginValidation, registerValidation } from "../validation/user.validation.js"
 import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 const register = async (request) => {
     const user = validate(registerValidation, request)
@@ -31,6 +32,46 @@ const register = async (request) => {
     })
 }
 
+const login = async (request) => {
+    const loginReq = validate(loginValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            email: loginReq.email
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(400, "Email atau password salah")
+    }
+
+    const isPasswordValid = await bcrypt.compare(loginReq.password, user.password)
+
+    if (!isPasswordValid) {
+        throw new ResponseError(400, "Email atau password salah")
+    }
+
+    const token = jwt.sign(
+        { 
+            id: user.id,
+            role: user.role
+        },
+        process.env.JWT_SECRET,
+        {expiresIn: "1d"}
+    )
+
+    return {
+        token: token,
+        user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role
+        }
+    }
+}
+
 export const userService = {
-    register
+    register,
+    login
 }

@@ -1,0 +1,36 @@
+import { prismaClient } from "../application/database.js"
+import { ResponseError } from "../error/response.error.js"
+import { registerValidation } from "../validation/user.validation.js"
+import { validate } from "../validation/validation.js"
+import bcrypt from "bcrypt"
+
+const register = async (request) => {
+    const user = validate(registerValidation, request)
+
+    const countUser = await prismaClient.user.count({
+        where: {
+            email: user.email
+        }
+    })
+
+    if (countUser === 1) {
+        throw new ResponseError(400, "Email sudah terdaftar")
+    }
+
+    user.password = await bcrypt.hash(user.password, 10)
+
+    return prismaClient.user.create({
+        data: user,
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            createdAt: true
+        }
+    })
+}
+
+export const userService = {
+    register
+}

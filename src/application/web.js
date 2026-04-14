@@ -5,6 +5,8 @@ import { errorMiddleware } from '../middleware/error.middleware.js';
 
 export const web = express();
 
+web.set('trust proxy', 1)
+
 // Middleware dasar
 web.use(cors());
 web.use(express.json());

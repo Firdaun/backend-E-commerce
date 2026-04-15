@@ -1,7 +1,6 @@
-import { orderService } from "../services/order.service.js"
 import { productService } from "../services/product.service.js"
 
-const getProducts = async (req, res, next) => {
+const getProducts = async (_, res, next) => {
     try {
         const result = await productService.getAllProducts()
         res.status(200).json({

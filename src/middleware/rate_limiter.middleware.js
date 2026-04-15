@@ -28,7 +28,7 @@ export const progressiveLoginLimiter = (req,res, next) => {
         const remainingSeconds = Math.ceil((tracker.blockUntil - now) / 1000)
         return res.status(429).json({
             errors: `Terlalu banyak percobaan login. Coba lagi dalam ${remainingSeconds} detik.`
-        }).end()
+        })
     }
 
     tracker.attempts += 1
@@ -45,7 +45,7 @@ export const progressiveLoginLimiter = (req,res, next) => {
 
         return res.status(429).json({
             errors: `Terlalu banyak percobaan login. Coba lagi dalam ${banDurationSeconds} detik.`
-        }).end()
+        })
     }
 
     loginTracker.set(ip, tracker)

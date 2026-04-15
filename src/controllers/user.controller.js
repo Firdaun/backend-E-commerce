@@ -14,7 +14,10 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-        const result = await userService.login(req.body)
+        const ipAddress = req.ip || "Unknown IP"
+        const deviceInfo = req.get('User-Agent') || "Unknown Device"
+
+        const result = await userService.login(req.body, ipAddress, deviceInfo)
 
         if (req.resetLoginTracker) {
             req.resetLoginTracker()
@@ -29,7 +32,20 @@ const login = async (req, res, next) => {
     }
 }
 
+const logout = async (req, res, next) => {
+    try {
+        const result = await userService.logout(req.token)
+
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const userController = {
     register,
-    login
+    login,
+    logout
 }

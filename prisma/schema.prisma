@@ -59,5 +59,17 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orders Order[]
+  orders   Order[]
+  sessions Session[]
+}
+
+model Session {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique
+  userId      Int
+  device_info String
+  ip_address  String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

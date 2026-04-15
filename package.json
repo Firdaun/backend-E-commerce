@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "node src/main.js",
-    "dev": "nodemon src/main.js"
+    "dev": "nodemon src/main.js",
+    "tests": "jest"
   },
   "keywords": [],
   "author": "",
@@ -21,13 +22,19 @@
     "express-rate-limit": "^8.3.2",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "sanitize-html": "^2.17.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
+    "babel-jest": "^30.3.0",
+    "jest": "^30.3.0",
     "nodemon": "^3.1.14",
-    "prisma": "^7.7.0"
+    "prisma": "^7.7.0",
+    "supertest": "^7.2.2"
   }
 }

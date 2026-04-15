@@ -32,7 +32,7 @@ const register = async (request) => {
     })
 }
 
-const login = async (request) => {
+const login = async (request, ipAddress, deviceInfo) => {
     const loginReq = validate(loginValidation, request)
 
     const user = await prismaClient.user.findUnique({
@@ -54,11 +54,34 @@ const login = async (request) => {
     const token = jwt.sign(
         { 
             id: user.id,
-            role: user.role
+            role: user.role,
+            session_id: Date.now() + Math.random()
         },
         process.env.JWT_SECRET,
         {expiresIn: "1d"}
     )
+
+    await prismaClient.session.create({
+        data: {
+            token: token,
+            userId: user.id,
+            ip_address: ipAddress,
+            device_info: deviceInfo
+        }
+    })
+
+    const activeSessions = await prismaClient.session.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'asc' } 
+    })
+
+    if (activeSessions.length > 3) {
+        const oldestSession = activeSessions[0]
+
+        await prismaClient.session.delete({
+            where: { id: oldestSession.id }
+        })
+    }
 
     return {
         token: token,
@@ -71,7 +94,28 @@ const login = async (request) => {
     }
 }
 
+const logout = async (token) => {
+    const session = await prismaClient.session.findUnique({
+        where: {
+            token: token
+        }
+    })
+
+    if (!session) {
+        throw new ResponseError(400, "Sesi tidak ditemukan")
+    }
+
+    await prismaClient.session.delete({
+        where: {
+            token: token
+        }
+    })
+
+    return "Logout berhasil"
+}
+
 export const userService = {
     register,
-    login
+    login,
+    logout
 }

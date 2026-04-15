@@ -1,9 +1,9 @@
 import supertest from "supertest"
 import { createTestUser, removeTestUser } from "../utils/user-util.js"
 import { web } from "../../src/application/web.js"
-import { createTestProduct, removeAllTestProducts } from "../utils/product-util"
-import { prismaClient } from "../../src/application/database"
-import { removeAllTestOrders } from "../utils/order-util"
+import { createTestProduct, removeAllTestProducts } from "../utils/product-util.js"
+import { prismaClient } from "../../src/application/database.js"
+import { removeAllTestOrders } from "../utils/order-util.js"
 
 describe('POST /api/orders', () => {
     let token = ""

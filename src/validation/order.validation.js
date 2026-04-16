@@ -11,8 +11,8 @@ const createOrderValidation = Joi.object({
             spice_level: Joi.number().min(0).max(5).required()
         })
     ).min(1).required()
-});
+})
 
 export {
     createOrderValidation
-};
+}

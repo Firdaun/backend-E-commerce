@@ -8,6 +8,7 @@ const createOrder = async (user, requestData) => {
     const orderReq = validate(createOrderValidation, requestData)
 
     const productIds = orderReq.orderItems.map(item => item.productId)
+    const uniqueProductIds = [...new Set(productIds)]
 
     const productsInDb = await prismaClient.product.findMany({
         where: {
@@ -16,7 +17,7 @@ const createOrder = async (user, requestData) => {
         }
     })
 
-    if (productsInDb.length !== productIds.length) {
+    if (productsInDb.length !== uniqueProductIds.length) {
         throw new ResponseError(400, "Beberapa menu yang dipesan tidak ditemukan atau sedang habis")
     }
 

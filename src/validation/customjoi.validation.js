@@ -9,15 +9,11 @@ export const Joi = joiBase.extend((joi) => ({
     },
     rules: {
         antiXSS: {
-            validate(value, helpers) {
+            validate(value, _) {
                 const cleanText = sanitizeHtml(value, {
                     allowedTags: [],
                     allowedAttributes: {}
                 })
-
-                if (cleanText !== value) {
-                    return helpers.error('string.xss')
-                }
 
                 return cleanText
             }

@@ -123,8 +123,8 @@ describe('POST /api/orders', () => {
                 }]
             })
 
-        expect(response.status).toBe(400)
-        expect(response.body.errors).toContain("berbahaya")
+        expect(response.status).toBe(201)
+        expect(response.body.data.address).toContain("Alamat Palsu")
     })
 
     it('should block spam orders using ordersLimiter', async () => {

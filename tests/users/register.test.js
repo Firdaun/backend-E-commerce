@@ -1,4 +1,4 @@
-import { createTestUser, removeTestUser } from '../utils/user-util.js'
+import { createTestUser, removeHackerUser, removeTestUser } from '../utils/user-util.js'
 import supertest from 'supertest'
 import { web } from '../../src/application/web.js'
 import { prismaClient } from '../../src/application/database.js'
@@ -6,9 +6,11 @@ import { prismaClient } from '../../src/application/database.js'
 describe('POST /api/users/register', () => {
     beforeEach(async () => {
         await removeTestUser()
+        await removeHackerUser()
     })
     afterEach(async () => {
         await removeTestUser()
+        await removeHackerUser()
     })
 
     afterAll(async () => {
@@ -59,8 +61,7 @@ describe('POST /api/users/register', () => {
                 name: 'Hacker <script>alert("xss")</script>'
             })
 
-        expect(response.status).toBe(400)
-        expect(response.body.errors).toBeDefined()
-        expect(response.body.errors).toContain('berbahaya')
+        expect(response.status).toBe(201)
+        expect(response.body.data.name).toContain('Hacker')
     })
 })

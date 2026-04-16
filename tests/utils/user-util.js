@@ -9,6 +9,14 @@ export const removeTestUser = async () => {
         }
     })
 }
+// menghapus akun hacker
+export const removeHackerUser = async () => {
+    await prismaClient.user.deleteMany({
+        where: {
+            email: 'hacker@example.com'
+        }
+    })
+}
 
 // Fungsi untuk membuat user percobaan (nanti berguna banget buat ngetes Login & Order)
 export const createTestUser = async () => {

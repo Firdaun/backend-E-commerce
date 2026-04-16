@@ -1,4 +1,5 @@
 import { prismaClient } from "../application/database.js"
+import { broadcastOrderToAdmin } from "../application/ws.js"
 import { ResponseError } from "../error/response.error.js"
 import { createOrderValidation } from "../validation/order.validation.js"
 import { validate } from "../validation/validation.js"
@@ -34,7 +35,7 @@ const createOrder = async (user, requestData) => {
         }
     })
 
-    return await prismaClient.order.create({
+    const newOrder = await prismaClient.order.create({
         data: {
             userId: user.id,
             username: orderReq.username,
@@ -50,6 +51,10 @@ const createOrder = async (user, requestData) => {
             orderItems: true
         }
     })
+
+    broadcastOrderToAdmin(newOrder)
+
+    return newOrder
 }
 
 const getOrders = async (userId) => {

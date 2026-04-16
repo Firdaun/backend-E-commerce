@@ -1,13 +1,37 @@
 import { prismaClient } from '../../src/application/database.js'
 
 export const removeAllTestProducts = async () => {
-    await prismaClient.product.deleteMany({
+
+    const testProducts = await prismaClient.product.findMany({
         where: {
             variant: {
                 contains: 'Test'
             }
+        },
+        select: {
+            id: true
         }
     })
+
+    const productsIds = testProducts.map(product => product.id)
+
+    if (productsIds.length > 0) {
+        await prismaClient.orderItem.deleteMany({
+            where: {
+                productId: {
+                    in: productsIds
+                }
+            }
+        })
+
+        await prismaClient.product.deleteMany({
+            where: {
+                id: {
+                    in: productsIds
+                }
+            }
+        })
+    }
 }
 
 export const createTestProduct = async () => {

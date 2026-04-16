@@ -1,10 +1,10 @@
-import express from "express"
-import { productController } from "../controllers/product.controller.js"
-import { orderController } from "../controllers/order.controller.js"
-import { userController } from "../controllers/user.controller.js"
-import { authMiddleware } from "../middleware/auth.middleware.js"
-import { ordersLimiter, progressiveLoginLimiter } from "../middleware/rate_limiter.middleware.js"
-import { adminMiddleware } from "../middleware/admin.middleware.js"
+import express from 'express'
+import { productController } from '../controllers/product.controller.js'
+import { orderController } from '../controllers/order.controller.js'
+import { userController } from '../controllers/user.controller.js'
+import { authMiddleware } from '../middleware/auth.middleware.js'
+import { ordersLimiter, progressiveLoginLimiter } from '../middleware/rate_limiter.middleware.js'
+import { adminMiddleware } from '../middleware/admin.middleware.js'
 
 const router = express.Router()
 

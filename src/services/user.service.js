@@ -1,9 +1,9 @@
-import { prismaClient } from "../application/database.js"
-import { ResponseError } from "../error/response.error.js"
-import { loginValidation, registerValidation } from "../validation/user.validation.js"
-import { validate } from "../validation/validation.js"
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import { prismaClient } from '../application/database.js'
+import { ResponseError } from '../error/response.error.js'
+import { loginValidation, registerValidation } from '../validation/user.validation.js'
+import { validate } from '../validation/validation.js'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const register = async (request) => {
     const user = validate(registerValidation, request)
@@ -15,7 +15,7 @@ const register = async (request) => {
     })
 
     if (countUser === 1) {
-        throw new ResponseError(400, "Email sudah terdaftar")
+        throw new ResponseError(400, 'Email has been registered')
     }
 
     user.password = await bcrypt.hash(user.password, 10)
@@ -42,13 +42,13 @@ const login = async (request, ipAddress, deviceInfo) => {
     })
 
     if (!user) {
-        throw new ResponseError(400, "Email atau password salah")
+        throw new ResponseError(400, 'Incorrect email or password')
     }
 
     const isPasswordValid = await bcrypt.compare(loginReq.password, user.password)
 
     if (!isPasswordValid) {
-        throw new ResponseError(400, "Email atau password salah")
+        throw new ResponseError(400, 'Incorrect email or password')
     }
 
     const token = jwt.sign(
@@ -58,7 +58,7 @@ const login = async (request, ipAddress, deviceInfo) => {
             session_id: Date.now() + Math.random()
         },
         process.env.JWT_SECRET,
-        {expiresIn: "1d"}
+        {expiresIn: '1d'}
     )
 
     await prismaClient.session.create({
@@ -102,7 +102,7 @@ const logout = async (token) => {
     })
 
     if (!session) {
-        throw new ResponseError(400, "Sesi tidak ditemukan")
+        throw new ResponseError(400, 'Session not found')
     }
 
     await prismaClient.session.delete({
@@ -111,7 +111,7 @@ const logout = async (token) => {
         }
     })
 
-    return "Logout berhasil"
+    return 'Logout successful'
 }
 
 export const userService = {

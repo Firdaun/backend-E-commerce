@@ -1,6 +1,6 @@
-import http from "http"
-import { WebSocket } from "ws"
-import { broadcastOrderToAdmin, initWebSocket } from "../../src/application/ws.js"
+import http from 'http'
+import { WebSocket } from 'ws'
+import { broadcastOrderToAdmin, initWebSocket } from '../../src/application/ws.js'
 
 describe('WebSocket Broadcast Logic', () => {
     let server
@@ -40,7 +40,7 @@ describe('WebSocket Broadcast Logic', () => {
             const parseData = JSON.parse(message.toString())
 
             expect(parseData.type).toBe('NEW_ORDER')
-            expect(parseData.message).toBe('Ada Pesanan Seblak Baru Masuk!')
+            expect(parseData.message).toBe('There is a new Seblak order coming in')
             
             expect(parseData.data.id).toBe(99)
             expect(parseData.data.username).toBe('Tester WebSocket')
@@ -56,7 +56,7 @@ describe('WebSocket Broadcast Logic', () => {
         expect(() => {
             broadcastOrderToAdmin({
                 id: 100,
-                variant: "Seblak Hantu"
+                variant: 'Seblak Hantu'
             })
         }).not.toThrow()
     })

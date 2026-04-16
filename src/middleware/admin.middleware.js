@@ -3,7 +3,7 @@ export const adminMiddleware = (req, res, next) => {
         next()
     } else {
         res.status(403).json({
-            errors: "Forbidden: Akses ditolak. Hanya Admin yang diizinkan melakukan ini."
+            errors: 'Forbidden: Access denied. Only Admins are allowed to do this'
         })
     }
 }

@@ -1,12 +1,12 @@
-import jwt from "jsonwebtoken"
-import { prismaClient } from "../application/database.js"
+import jwt from 'jsonwebtoken'
+import { prismaClient } from '../application/database.js'
 
 export const authMiddleware = async (req, res, next) => {
     const authHeader = req.get('x-api-key')
 
     if (!authHeader) {
         res.status(401).json({
-            errors: "Unauthorized: Silakan login terlebih dahulu"
+            errors: 'Unauthorized: Please log in first'
         })
         return
     }
@@ -22,7 +22,7 @@ export const authMiddleware = async (req, res, next) => {
         })
         if (!session) {
             return res.status(401).json({
-                errors: "Unauthorized: Sesi telah berakhir. Silakan login kembali."
+                errors: 'Unauthorized: The session has expired Please log in again'
             })
         }
         req.user = decoded
@@ -30,7 +30,7 @@ export const authMiddleware = async (req, res, next) => {
         next()
     } catch (e) {
         res.status(401).json({
-            errors: "Unauthorized: Token tidak valid atau kedaluwarsa"
+            errors: 'Unauthorized: Token is invalid or expired'
         })
     }
 }

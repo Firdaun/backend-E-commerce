@@ -1,9 +1,9 @@
-import supertest from "supertest"
-import { web } from "../../src/application/web.js"
-import { createTestUser, removeTestUser } from "../utils/user-util.js"
-import { createTestProduct, removeAllTestProducts } from "../utils/product-util.js"
-import { prismaClient } from "../../src/application/database.js"
-import { removeAllTestOrders } from "../utils/order-util.js"
+import supertest from 'supertest'
+import { web } from '../../src/application/web.js'
+import { createTestUser, removeTestUser } from '../utils/user-util.js'
+import { createTestProduct, removeAllTestProducts } from '../utils/product-util.js'
+import { prismaClient } from '../../src/application/database.js'
+import { removeAllTestOrders } from '../utils/order-util.js'
 
 describe('GET /api/orders', () => {
     let token = ''
@@ -18,8 +18,8 @@ describe('GET /api/orders', () => {
         const loginResponse = await supertest(web)
             .post('/api/users/login')
             .send({
-                email: "test@example.com",
-                password: "rahasia123"
+                email: 'test@example.com',
+                password: 'rahasia123'
             })
         token = loginResponse.body.data.token
 
@@ -49,9 +49,9 @@ describe('GET /api/orders', () => {
             .post('/api/orders')
             .set('x-api-key', `Bearer ${token}`)
             .send({
-                username: "Tester Order",
-                no_wa: "08123456789",
-                address: "Jalan Testing Pesanan No 1",
+                username: 'Tester Order',
+                no_wa: '08123456789',
+                address: 'Jalan Testing Pesanan No 1',
                 orderItems: [{
                     productId: availableProductId,
                     quantity: 2,
@@ -99,6 +99,6 @@ describe('GET /api/orders', () => {
             .get('/api/orders')
 
         expect(response.status).toBe(401)
-        expect(response.body.errors).toContain('Silakan login')
+        expect(response.body.errors).toContain('Unauthorized: Please log in first')
     })
 })

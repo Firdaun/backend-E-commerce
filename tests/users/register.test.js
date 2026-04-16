@@ -27,7 +27,7 @@ describe('POST /api/users/register', () => {
             })
 
             expect(response.status).toBe(201)
-            expect(response.body.message).toBe('User berhasil didaftarkan')
+            expect(response.body.message).toBe('User has been successfully registered')
 
             expect(response.body.data.email).toBe('test@example.com')
             expect(response.body.data.name).toBe('Fahrul Tester')
@@ -49,7 +49,7 @@ describe('POST /api/users/register', () => {
         expect(response.status).toBe(400)
         expect(response.body.errors).toBeDefined()
 
-        expect(response.body.errors).toContain('Email sudah terdaftar')
+        expect(response.body.errors).toContain('Email has been registered')
     })
 
     it('should reject registration if the input contains malicious XSS tags', async () => {

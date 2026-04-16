@@ -1,6 +1,6 @@
-import { prismaClient } from "../application/database.js"
-import { createProductValidation } from "../validation/product.validation.js"
-import { validate } from "../validation/validation.js"
+import { prismaClient } from '../application/database.js'
+import { createProductValidation } from '../validation/product.validation.js'
+import { validate } from '../validation/validation.js'
 
 const getAllProducts = async () => {
     return await prismaClient.product.findMany({
@@ -21,4 +21,4 @@ const createProduct = async (requestData) => {
 export const productService = {
     getAllProducts,
     createProduct
-};
+}

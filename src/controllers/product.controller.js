@@ -1,4 +1,4 @@
-import { productService } from "../services/product.service.js"
+import { productService } from '../services/product.service.js'
 
 const getProducts = async (_, res, next) => {
     try {
@@ -15,7 +15,7 @@ const createProduct = async (req, res, next) => {
     try {
         const result = await productService.createProduct(req.body)
         res.status(201).json({
-            message: "Menu seblak berhasil ditambahkan!",
+            message: 'Seblak menu successfully added',
             data: result
         })
     } catch (e) {
@@ -26,4 +26,4 @@ const createProduct = async (req, res, next) => {
 export const productController = {
     getProducts,
     createProduct,
-};
+}

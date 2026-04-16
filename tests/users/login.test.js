@@ -27,7 +27,7 @@ describe('POST /api/users/login', () => {
             })
 
         expect(response.status).toBe(200)
-        expect(response.body.message).toBe('Login berhasil')
+        expect(response.body.message).toBe('Login successful')
         expect(response.body.data.token).toBeDefined()
         expect(response.body.data.user.email).toBe('test@example.com')
     })
@@ -43,13 +43,37 @@ describe('POST /api/users/login', () => {
             })
 
         expect(response.status).toBe(400)
-        expect(response.body.errors).toContain('Email atau password salah')
+        expect(response.body.errors).toContain('Incorrect email or password')
+    })
+
+    it('should reject login with empty email', async () => {
+        const response = await supertest(web)
+            .post('/api/users/login')
+            .send({
+                email: '',
+                password: 'asfebjusn'
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('is not allowed to be empty')
+    })
+    
+    it('should reject login with empty email and password', async () => {
+        const response = await supertest(web)
+            .post('/api/users/login')
+            .send({
+                email: '',
+                password: ''
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('\"email\" is not allowed to be empty. \"password\" is not allowed to be empty, nu baleg bos')
     })
 
     it('should block the IP after 5 consecutive failed login attempts', async () => {
         await createTestUser()
 
-        const hackerIP = '192.168.1.99'
+        const hackerIP = '192.168.1.89'
 
         for (let i = 0; i < 4; i++) {
             const response = await supertest(web)
@@ -71,7 +95,7 @@ describe('POST /api/users/login', () => {
             })
 
         expect(blockedResponse.status).toBe(429)
-        expect(blockedResponse.body.errors).toContain('Terlalu banyak percobaan login')
+        expect(blockedResponse.body.errors).toContain('Too many login attempts')
     })
 
     it('should enforce a maximum of 3 active devices', async () => {

@@ -1,11 +1,11 @@
-import { orderService } from "../services/order.service.js"
+import { orderService } from '../services/order.service.js'
 
 const createOrder = async (req, res, next) => {
     try {
         const user = req.user
         const result = await orderService.createOrder(user, req.body)
         res.status(201).json({
-            message: "Pesanan berhasil dibuat! Segera diproses.",
+            message: 'Order successfully created! Processing soon',
             data: result
         })
     } catch (e) {

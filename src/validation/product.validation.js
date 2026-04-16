@@ -1,14 +1,14 @@
-import { Joi } from "./customjoi.validation.js"
+import { Joi } from './customjoi.validation.js'
 
 const createProductValidation = Joi.object({
     variant: Joi.string().max(100).required().antiXSS(),
     price: Joi.number().min(1).positive().required(),
     spice_level: Joi.number().min(0).max(5).required(),
-    description: Joi.string().optional().allow("").antiXSS(),
+    description: Joi.string().optional().allow('').antiXSS(),
     image_url: Joi.string().uri().required().antiXSS(),
     is_available: Joi.boolean().optional()
-});
+})
 
 export {
     createProductValidation
-};
+}

@@ -1,7 +1,7 @@
-import supertest from "supertest"
-import { createTestProduct, removeAllTestProducts } from "../utils/product-util.js"
-import { web } from "../../src/application/web.js"
-import { prismaClient } from "../../src/application/database.js"
+import supertest from 'supertest'
+import { createTestProduct, removeAllTestProducts } from '../utils/product-util.js'
+import { web } from '../../src/application/web.js'
+import { prismaClient } from '../../src/application/database.js'
 
 describe('GET /api/products', () => {
     beforeEach(async () => {
@@ -29,7 +29,7 @@ describe('GET /api/products', () => {
         expect(Array.isArray(products)).toBe(true)
         expect(products.length).toBe(1)
 
-        expect(products[0].variant).toBe("Seblak Test Ori")
+        expect(products[0].variant).toBe('Seblak Test Ori')
         expect(products[0].is_available).toBe(true)
     })
 

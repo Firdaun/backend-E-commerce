@@ -1,4 +1,4 @@
-import { Joi } from "./customjoi.validation.js"
+import { Joi } from './customjoi.validation.js'
 
 const registerValidation = Joi.object({
     email: Joi.string().email().max(100).required().antiXSS(),

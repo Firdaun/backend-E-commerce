@@ -32,7 +32,7 @@ describe('DELETE /api/users/logout', () => {
             .set('x-api-key', `Bearer ${token}`)
 
         expect(response.status).toBe(200)
-        expect(response.body.data).toBe('Logout berhasil')
+        expect(response.body.data).toBe('Logout successful')
 
         const sessionInDb = await prismaClient.session.findUnique({
             where: {
@@ -47,7 +47,7 @@ describe('DELETE /api/users/logout', () => {
             .delete('/api/users/logout')
 
         expect(response.status).toBe(401)
-        expect(response.body.errors).toContain('Silakan login terlebih dahulu')
+        expect(response.body.errors).toContain('Unauthorized: Please log in first')
     })
 
     it('should reject logout if the token is invalid or already logged out', async () => {
@@ -55,8 +55,8 @@ describe('DELETE /api/users/logout', () => {
         const loginResponse = await supertest(web)
             .post('/api/users/login')
             .send({
-                email: "test@example.com",
-                password: "rahasia123"
+                email: 'test@example.com',
+                password: 'rahasia123'
             })
 
         const token = loginResponse.body.data.token
@@ -69,7 +69,7 @@ describe('DELETE /api/users/logout', () => {
             .delete('/api/users/logout')
             .set('x-api-key', `Bearer ${token}`)
 
-        expect(response.status).toBe(401);
-        expect(response.body.errors).toContain("Sesi telah berakhir")
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toContain('The session has expired')
     })
 })

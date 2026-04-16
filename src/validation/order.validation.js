@@ -1,4 +1,4 @@
-import { Joi } from "./customjoi.validation.js"
+import { Joi } from './customjoi.validation.js'
 
 const createOrderValidation = Joi.object({
     username: Joi.string().max(100).required().antiXSS(),

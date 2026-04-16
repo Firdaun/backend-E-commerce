@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit"
+import rateLimit from 'express-rate-limit'
 const loginTracker = new Map()
 export const progressiveLoginLimiter = (req,res, next) => {
     const ip = req.ip
@@ -27,7 +27,7 @@ export const progressiveLoginLimiter = (req,res, next) => {
     if (now < tracker.blockUntil) {
         const remainingSeconds = Math.ceil((tracker.blockUntil - now) / 1000)
         return res.status(429).json({
-            errors: `Terlalu banyak percobaan login. Coba lagi dalam ${remainingSeconds} detik.`
+            errors: `Too many login attempts. Please try again in ${remainingSeconds} seconds`
         })
     }
 
@@ -44,7 +44,7 @@ export const progressiveLoginLimiter = (req,res, next) => {
         loginTracker.set(ip, tracker)
 
         return res.status(429).json({
-            errors: `Terlalu banyak percobaan login. Coba lagi dalam ${banDurationSeconds} detik.`
+            errors: `Too many login attempts. Please try again in ${banDurationSeconds} seconds`
         })
     }
 
@@ -63,6 +63,6 @@ export const ordersLimiter = rateLimit({
     windowMs: 3 * 60 * 1000,
     max: 10,
     message: {
-        errors: "Sabar bos! Dapur lagi masak pesananmu. Kasih jeda 3 menit kalau mau order lagi."
+        errors: 'Please be patient! The kitchen is cooking your order. Please allow 3 minutes for another order'
     }
 })

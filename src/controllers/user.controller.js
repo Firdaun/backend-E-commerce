@@ -1,10 +1,10 @@
-import { userService } from "../services/user.service.js"
+import { userService } from '../services/user.service.js'
 
 const register = async (req, res, next) => {
     try {
         const result = await userService.register(req.body)
         res.status(201).json({
-            message: "User berhasil didaftarkan",
+            message: 'User has been successfully registered',
             data: result
         })
     } catch (e) {
@@ -14,8 +14,8 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-        const ipAddress = req.ip || "Unknown IP"
-        const deviceInfo = req.get('User-Agent') || "Unknown Device"
+        const ipAddress = req.ip || 'Unknown IP'
+        const deviceInfo = req.get('User-Agent') || 'Unknown Device'
 
         const result = await userService.login(req.body, ipAddress, deviceInfo)
 
@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
         }
 
         res.status(200).json({
-            message: "Login berhasil",
+            message: 'Login successful',
             data: result
         })
     } catch (e) {

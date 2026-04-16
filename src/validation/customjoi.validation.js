@@ -1,11 +1,11 @@
-import joiBase from "joi"
-import sanitizeHtml from "sanitize-html"
+import joiBase from 'joi'
+import sanitizeHtml from 'sanitize-html'
 
 export const Joi = joiBase.extend((joi) => ({
-    type: "string",
+    type: 'string',
     base: joi.string(),
     messages: {
-        'string.xss': '{{#label}} terdeteksi mengandung tag HTML/Script berbahaya.'
+        'string.xss': '{{#label}} detected containing malicious HTML/Script tags'
     },
     rules: {
         antiXSS: {

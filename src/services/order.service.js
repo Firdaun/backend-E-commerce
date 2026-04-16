@@ -1,8 +1,8 @@
-import { prismaClient } from "../application/database.js"
-import { broadcastOrderToAdmin } from "../application/ws.js"
-import { ResponseError } from "../error/response.error.js"
-import { createOrderValidation } from "../validation/order.validation.js"
-import { validate } from "../validation/validation.js"
+import { prismaClient } from '../application/database.js'
+import { broadcastOrderToAdmin } from '../application/ws.js'
+import { ResponseError } from '../error/response.error.js'
+import { createOrderValidation } from '../validation/order.validation.js'
+import { validate } from '../validation/validation.js'
 
 const createOrder = async (user, requestData) => {
     const orderReq = validate(createOrderValidation, requestData)
@@ -18,7 +18,7 @@ const createOrder = async (user, requestData) => {
     })
 
     if (productsInDb.length !== uniqueProductIds.length) {
-        throw new ResponseError(400, "Beberapa menu yang dipesan tidak ditemukan atau sedang habis")
+        throw new ResponseError(400, 'Some of the ordered menus were not found or were out of stock')
     }
 
     let total_price = 0
@@ -43,7 +43,7 @@ const createOrder = async (user, requestData) => {
             no_wa: orderReq.no_wa,
             address: orderReq.address,
             total_price: total_price,
-            status: "Menunggu",
+            status: 'Menunggu',
             orderItems: {
                 create: itemsWithRealPrice
             }

@@ -89,6 +89,21 @@ describe('POST /api/orders', () => {
         expect(response.status).toBe(401)
         expect(response.body.errors).toContain('Unauthorized: Please log in first')
     })
+    
+    it('should reject order if orderItems is empty', async () => {
+        const response = await supertest(web)
+            .post('/api/orders')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                username: 'Tester Order',
+                no_wa: '08123456789',
+                address: 'Jalan Testing',
+                orderItems: []
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('\"orderItems\" must contain at least 1 items')
+    })
 
     it('should reject order if ordering an unavailable or non-existent product', async () => {
         const response = await supertest(web)

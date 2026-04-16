@@ -48,8 +48,19 @@ const createOrder = async (user, requestData) => {
                 create: itemsWithRealPrice
             }
         },
+        
         include: {
-            orderItems: true
+            orderItems: {
+                include: {
+                    product: true
+                }
+            },
+            user: {
+                select: {
+                    name: true,
+                    email: true
+                }
+            }
         }
     })
 
@@ -76,7 +87,29 @@ const getOrders = async (userId) => {
     })
 }
 
+const getAllOrders = async () => {
+    return prismaClient.order.findMany({
+        include: {
+            orderItems: {
+                include: {
+                    product: true
+                }
+            },
+            user: {
+                select: {
+                    name: true,
+                    email: true
+                }
+            }
+        },
+        orderBy: {
+            id: 'desc'
+        }
+    })
+}
+
 export const orderService = {
     createOrder,
-    getOrders
+    getOrders,
+    getAllOrders
 }

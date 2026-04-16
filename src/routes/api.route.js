@@ -17,6 +17,7 @@ router.delete('/users/logout', authMiddleware, userController.logout)
 
 router.post('/orders', authMiddleware, ordersLimiter, orderController.createOrder)
 router.get('/orders', authMiddleware, orderController.getOrders)
+router.get('/admin/orders', authMiddleware, adminMiddleware, orderController.getAllOrders)
 
 
 export { router }

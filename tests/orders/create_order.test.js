@@ -180,4 +180,23 @@ describe('POST /api/orders', () => {
         expect(blockedResponse.status).toBe(429)
         expect(blockedResponse.body.errors).toContain('Please be patient! The kitchen is cooking your order. Please allow 3 minutes for another order')
     })
+
+    it('should reject order if quantity is less than 1 or more than 50', async () => {
+        const response = await supertest(web)
+            .post('/api/orders')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                username: 'Tester Order',
+                no_wa: '08123456789',
+                address: 'Jalan Testing',
+                orderItems: [{
+                    productId: availableProductId,
+                    quantity: 100,
+                    spice_level: 1
+                }]
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('quantity')
+    })
 })

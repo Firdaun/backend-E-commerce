@@ -10,6 +10,8 @@ const router = express.Router()
 
 router.get('/products', productController.getProducts)
 router.post('/products', authMiddleware, adminMiddleware, productController.createProduct)
+router.put('/products/:id', authMiddleware, adminMiddleware, productController.updateProduct)
+router.delete('/products/:id', authMiddleware, adminMiddleware, productController.deleteProduct)
 
 router.post('/users/register', userController.register)
 router.post('/users/login', progressiveLoginLimiter, userController.login)
@@ -17,14 +19,7 @@ router.delete('/users/logout', authMiddleware, userController.logout)
 
 router.post('/orders', authMiddleware, ordersLimiter, orderController.createOrder)
 router.get('/orders', authMiddleware, orderController.getOrders)
-
 router.get('/admin/orders', authMiddleware, adminMiddleware, orderController.getAllOrders)
-
 router.put('/admin/orders/:id/status', authMiddleware, adminMiddleware, orderController.updateOrderStatus)
-
-router.put('/products/:id', authMiddleware, adminMiddleware, productController.updateProduct)
-
-router.delete('/products/:id', authMiddleware, adminMiddleware, productController.deleteProduct)
-
 
 export { router }

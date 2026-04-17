@@ -1,6 +1,6 @@
 import supertest from 'supertest'
 import { web } from '../../src/application/web.js'
-import { createTestUser, removeTestUser } from '../utils/user-util.js'
+import { createTestAdmin, createTestUser, removeTestAdmin, removeTestUser } from '../utils/user-util.js'
 import { createTestProduct, removeAllTestProducts } from '../utils/product-util.js'
 import { prismaClient } from '../../src/application/database.js'
 import { removeAllTestOrders } from '../utils/order-util.js'
@@ -11,8 +11,9 @@ describe('GET /api/orders', () => {
 
     beforeEach(async () => {
         await removeAllTestOrders()
-        await removeTestUser()
         await removeAllTestProducts()
+        await removeTestAdmin()
+        await removeTestUser()
 
         await createTestUser(web)
         const loginResponse = await supertest(web)
@@ -36,8 +37,9 @@ describe('GET /api/orders', () => {
 
     afterEach(async () => {
         await removeAllTestOrders()
-        await removeTestUser()
         await removeAllTestProducts()
+        await removeTestAdmin()
+        await removeTestUser()
     })
 
     afterAll(async () => {
@@ -82,6 +84,31 @@ describe('GET /api/orders', () => {
 
         expect(item.product).toBeDefined()
         expect(item.product.variant).toBe('Seblak Test Ori')
+    })
+
+    it('should not return orders belonging to other users', async () => {
+        await supertest(web)
+            .post('/api/orders')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                username: 'Tester Order',
+                no_wa: '08123456789',
+                address: 'Jalan Pertama',
+                orderItems: [{ productId: availableProductId, quantity: 1, spice_level: 1 }]
+            })
+
+        await createTestAdmin()
+        const loginUserB = await supertest(web)
+            .post('/api/users/login')
+            .send({ email: 'admin@example.com', password: 'rahasia123' })
+        const tokenUserB = loginUserB.body.data.token
+
+        const response = await supertest(web)
+            .get('/api/orders')
+            .set('x-api-key', `Bearer ${tokenUserB}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.length).toBe(0)
     })
 
     it('should return an empty array if the user has not ordered anything yet', async () => {

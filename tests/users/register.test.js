@@ -64,4 +64,30 @@ describe('POST /api/users/register', () => {
         expect(response.status).toBe(201)
         expect(response.body.data.name).toContain('Hacker')
     })
+    
+    it('should reject registration if email format is invalid', async () => {
+        const response = await supertest(web)
+            .post('/api/users/register')
+            .send({
+                email: 'bukanformatemail',
+                password: 'rahasia123',
+                name: 'Fahrul Tester'
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('must be a valid email')
+    })
+
+    it('should reject registration if password is less than 6 characters', async () => {
+        const response = await supertest(web)
+            .post('/api/users/register')
+            .send({
+                email: 'test2@example.com',
+                password: '123',
+                name: 'Fahrul Tester'
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('password')
+    })
 })

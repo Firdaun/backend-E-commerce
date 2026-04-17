@@ -113,25 +113,28 @@ describe('POST /api/users/login', () => {
     it('should enforce a maximum of 3 active devices', async () => {
         await createTestUser()
 
+        const cleanIP = '192.168.1.100'
+
         for (let i = 1; i <= 4; i++) {
-            await supertest(web)
+            const response = await supertest(web)
                 .post('/api/users/login')
                 .set('User-Agent', `Device-${i}`)
+                .set('X-Forwarded-For', cleanIP)
                 .send({
                     email: 'test@example.com',
                     password: 'rahasia123'
                 })
 
-            console.log(`Login ${i} status:`)
+            expect(response.status).toBe(200)
         }
 
         const user = await prismaClient.user.findUnique({
             where: { email: 'test@example.com' }
         })
 
-        const activeSessions = await prismaClient.session.findMany()
-        console.log('Semua session:', activeSessions)
-        console.log('User:', user)
+        const activeSessions = await prismaClient.session.findMany({
+            where: { userId: user.id }
+        })
 
         expect(activeSessions.length).toBe(3)
 

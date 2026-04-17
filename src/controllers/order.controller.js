@@ -37,8 +37,22 @@ const getAllOrders = async (_, res, next) => {
     }
 }
 
+const updateOrderStatus = async (req, res, next) => {
+    try {
+        const orderId = parseInt(req.params.id)
+        const result = await orderService.updateOrderStatus(orderId, req.body)
+        res.status(200).json({
+            message: `Order status #${orderId} successfully changed to ${result.status}`,
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const orderController = {
     createOrder,
     getOrders,
-    getAllOrders
+    getAllOrders,
+    updateOrderStatus
 }

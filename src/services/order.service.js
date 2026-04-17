@@ -1,7 +1,7 @@
 import { prismaClient } from '../application/database.js'
 import { broadcastOrderToAdmin } from '../application/ws.js'
 import { ResponseError } from '../error/response.error.js'
-import { createOrderValidation } from '../validation/order.validation.js'
+import { createOrderValidation, updateStatusValidation } from '../validation/order.validation.js'
 import { validate } from '../validation/validation.js'
 
 const createOrder = async (user, requestData) => {
@@ -12,7 +12,9 @@ const createOrder = async (user, requestData) => {
 
     const productsInDb = await prismaClient.product.findMany({
         where: {
-            id: {in: productIds},
+            id: {
+                in: productIds
+            },
             is_available: true
         }
     })
@@ -108,8 +110,39 @@ const getAllOrders = async () => {
     })
 }
 
+const updateOrderStatus = async (orderId, request) => {
+    const statusReq = validate(updateStatusValidation, request)
+
+    const orderCount = await prismaClient.order.count({
+        where: {
+            id: orderId
+        }
+    })
+
+    if (orderCount === 0) {
+        throw new ResponseError(404, 'order not found')
+    }
+
+    return prismaClient.order.update({
+        where: {
+            id: orderId
+        },
+        data: {
+            status: statusReq.status
+        },
+        include: {
+            orderItems: {
+                include: {
+                    product: true
+                }
+            }
+        }
+    })
+}
+
 export const orderService = {
     createOrder,
     getOrders,
-    getAllOrders
+    getAllOrders,
+    updateOrderStatus
 }

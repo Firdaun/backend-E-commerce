@@ -9,6 +9,16 @@ const createProductValidation = Joi.object({
     is_available: Joi.boolean().optional()
 })
 
+const updateProductValidation = Joi.object({
+    variant: Joi.string().max(100).optional(),
+    price: Joi.number().min(0).optional(),
+    spice_level: Joi.number().min(0).max(5).optional(),
+    description: Joi.string().optional(),
+    image_url: Joi.string().uri().optional(),
+    is_available: Joi.boolean().optional()
+})
+
 export {
-    createProductValidation
+    createProductValidation,
+    updateProductValidation
 }

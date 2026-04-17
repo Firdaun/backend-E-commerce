@@ -7,11 +7,9 @@ export const web = express()
 
 web.set('trust proxy', 1)
 
-// Middleware dasar
 web.use(cors())
 web.use(express.json())
 
-// Rute sementara untuk memastikan web-nya jalan
 web.get('/', (_, res) => {
     res.json({ message: 'API Seblak Hot Jeletot Terkoneksi' })
 })

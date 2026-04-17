@@ -57,7 +57,7 @@ describe('POST /api/users/login', () => {
         expect(response.status).toBe(400)
         expect(response.body.errors).toContain('is not allowed to be empty')
     })
-    
+
     it('should reject login with empty email and password', async () => {
         const response = await supertest(web)
             .post('/api/users/login')
@@ -68,6 +68,18 @@ describe('POST /api/users/login', () => {
 
         expect(response.status).toBe(400)
         expect(response.body.errors).toContain('\"email\" is not allowed to be empty. \"password\" is not allowed to be empty, nu baleg bos')
+    })
+
+    it('should reject login if email is not registered', async () => {
+        const response = await supertest(web)
+            .post('/api/users/login')
+            .send({
+                email: "tidakada@example.com",
+                password: "rahasia123"
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toBeDefined()
     })
 
     it('should block the IP after 5 consecutive failed login attempts', async () => {
@@ -109,15 +121,17 @@ describe('POST /api/users/login', () => {
                     email: 'test@example.com',
                     password: 'rahasia123'
                 })
+
+            console.log(`Login ${i} status:`)
         }
 
         const user = await prismaClient.user.findUnique({
             where: { email: 'test@example.com' }
         })
 
-        const activeSessions = await prismaClient.session.findMany({
-            where: { userId: user.id }
-        })
+        const activeSessions = await prismaClient.session.findMany()
+        console.log('Semua session:', activeSessions)
+        console.log('User:', user)
 
         expect(activeSessions.length).toBe(3)
 

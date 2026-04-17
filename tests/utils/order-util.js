@@ -7,11 +7,11 @@ export const removeAllTestOrders = async () => {
                 username: 'Tester Order'
             }
         }
-    });
+    })
 
     await prismaClient.order.deleteMany({
         where: {
             username: 'Tester Order'
         }
-    });
+    })
 }

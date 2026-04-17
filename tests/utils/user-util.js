@@ -39,6 +39,8 @@ export const createTestAdmin = async () => {
 
 export const removeTestAdmin = async () => {
     await prismaClient.user.deleteMany({
-        where: { email: 'admin@example.com' }
+        where: {
+            email: 'admin@example.com'
+        }
     })
 }

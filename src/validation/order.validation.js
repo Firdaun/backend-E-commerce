@@ -13,6 +13,11 @@ const createOrderValidation = Joi.object({
     ).min(1).required()
 })
 
+const updateStatusValidation = Joi.object({
+    status: Joi.string().valid("Menunggu", "Sedang Dimasak", "Dikirim", "Selesai", "Dibatalkan").required()
+})
+
 export {
-    createOrderValidation
+    createOrderValidation,
+    updateStatusValidation
 }

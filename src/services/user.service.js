@@ -1,6 +1,6 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { loginValidation, registerValidation, updateUserValidation } from '../validation/user.validation.js'
+import { deleteAccountValidation, loginValidation, registerValidation, updatePasswordValidation, updateUserValidation } from '../validation/user.validation.js'
 import { validate } from '../validation/validation.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -52,13 +52,13 @@ const login = async (request, ipAddress, deviceInfo) => {
     }
 
     const token = jwt.sign(
-        { 
+        {
             id: user.id,
             role: user.role,
             session_id: Date.now() + Math.random()
         },
         process.env.JWT_SECRET,
-        {expiresIn: '1d'}
+        { expiresIn: '1d' }
     )
 
     await prismaClient.session.create({
@@ -72,7 +72,7 @@ const login = async (request, ipAddress, deviceInfo) => {
 
     const activeSessions = await prismaClient.session.findMany({
         where: { userId: user.id },
-        orderBy: { createdAt: 'asc' } 
+        orderBy: { createdAt: 'asc' }
     })
 
     if (activeSessions.length > 3) {
@@ -86,6 +86,7 @@ const login = async (request, ipAddress, deviceInfo) => {
     return {
         token: token,
         user: {
+            id: user.id,
             email: user.email,
             name: user.name,
             role: user.role
@@ -119,6 +120,7 @@ const getCurrentUser = async (userId) => {
             id: userId
         },
         select: {
+            id: true,
             email: true,
             name: true,
             role: true,
@@ -155,7 +157,7 @@ const updateProfile = async (userId, request) => {
         data: updateReq,
         select: {
             id: true,
-            email:true,
+            email: true,
             name: true,
             no_wa: true,
             address: true,
@@ -165,10 +167,109 @@ const updateProfile = async (userId, request) => {
     })
 }
 
+const updatePassword = async (userId, request) => {
+    const updateReq = validate(updatePasswordValidation, request)
+
+    if (updateReq.old_password === updateReq.new_password) {
+        throw new ResponseError(400, 'New password cannot be the same as the old password')
+    }
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            id: userId
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(404, 'User Not Found')
+    }
+
+    const isPasswordValid = await bcrypt.compare(updateReq.old_password, user.password)
+
+    if (!isPasswordValid) {
+        throw new ResponseError(400, 'Old password is wrong')
+    }
+
+    const newPasswordHashed = await bcrypt.hash(updateReq.new_password, 10)
+
+    return prismaClient.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            password: newPasswordHashed
+        }
+    })
+}
+
+const deleteAccount = async (userId, request) => {
+    const req = validate(deleteAccountValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            id: userId
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(404, 'User Not Found')
+    }
+
+    const isPasswordValid = await bcrypt.compare(req.password, user.password)
+    
+    if (!isPasswordValid) {
+        throw new ResponseError(400, 'Invalid password')
+    }
+
+    await prismaClient.$transaction(async (prisma) => {
+        await prisma.session.deleteMany({
+            where: {
+                userId: userId
+            }
+        })
+
+        const userOrders = await prisma.order.findMany({
+            where: {
+                userId: userId
+            },
+
+            select: {
+                id: true
+            }
+        })
+
+        const orderIds = userOrders.map(order => order.id)
+
+        if (orderIds.length > 0) {
+            await prisma.orderItem.deleteMany({
+                where: {
+                    orderId: {
+                        in: orderIds
+                    }
+                }
+            })
+
+            await prisma.order.deleteMany({
+                where: {
+                    userId: userId
+                }
+            })
+        }
+
+        await prisma.user.delete({
+            where: {
+                id: userId
+            }
+        })
+    })
+}
+
 export const userService = {
     register,
     login,
     logout,
     getCurrentUser,
-    updateProfile
+    updateProfile,
+    updatePassword,
+    deleteAccount
 }

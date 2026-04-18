@@ -17,8 +17,19 @@ const updateUserValidation = Joi.object({
     address: Joi.string().optional().allow(null, '').antiXSS()
 })
 
+const updatePasswordValidation = Joi.object({
+    old_password: Joi.string().required(),
+    new_password: Joi.string().min(6).required()
+})
+
+const deleteAccountValidation = Joi.object({
+    password: Joi.string().required()
+})
+
 export {
     registerValidation,
     loginValidation,
-    updateUserValidation
+    updateUserValidation,
+    updatePasswordValidation,
+    deleteAccountValidation
 }

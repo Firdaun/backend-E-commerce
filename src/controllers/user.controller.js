@@ -69,10 +69,37 @@ const updateProfile = async (req, res, next) => {
     }
 }
 
+const updatePassword = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        await userService.updatePassword(userId, req.body)
+        res.status(200).json({
+            message: 'Password successfully updated'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const deleteAccount = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        await userService.deleteAccount(userId, req.body)
+        
+        res.status(200).json({
+            message: 'Account successfully deleted'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const userController = {
     register,
     login,
     logout,
     getCurrentUser,
-    updateProfile
+    updateProfile,
+    updatePassword,
+    deleteAccount
 }

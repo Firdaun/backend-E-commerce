@@ -35,7 +35,6 @@ describe('PUT /api/admin/orders/:id/status', () => {
             })
 
         userToken = loginUser.body.data.token
-        const userId = loginUser.body.data.user.id
 
         await createTestProduct()
         const product = await prismaClient.product.findFirst({
@@ -44,9 +43,15 @@ describe('PUT /api/admin/orders/:id/status', () => {
             }
         })
 
+        const userId = await prismaClient.user.findUnique({
+            where: {
+                email: 'test@example.com'
+            }
+        })
+
         const order = await prismaClient.order.create({
             data: {
-                userId: userId,
+                userId: userId.id,
                 username: 'Tester Order',
                 no_wa: '08123456789',
                 address: 'Jalan Testing',

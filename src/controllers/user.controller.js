@@ -44,8 +44,35 @@ const logout = async (req, res, next) => {
     }
 }
 
+const getCurrentUser = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        const result = await userService.getCurrentUser(userId)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const updateProfile = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        const result = await userService.updateProfile(userId, req.body)
+        res.status(200).json({
+            message: 'Profile seccessfully updated',
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const userController = {
     register,
     login,
-    logout
+    logout,
+    getCurrentUser,
+    updateProfile
 }

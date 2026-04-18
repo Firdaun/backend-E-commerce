@@ -1,6 +1,6 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { loginValidation, registerValidation } from '../validation/user.validation.js'
+import { loginValidation, registerValidation, updateUserValidation } from '../validation/user.validation.js'
 import { validate } from '../validation/validation.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -86,7 +86,6 @@ const login = async (request, ipAddress, deviceInfo) => {
     return {
         token: token,
         user: {
-            id: user.id,
             email: user.email,
             name: user.name,
             role: user.role
@@ -114,8 +113,62 @@ const logout = async (token) => {
     return 'Logout successful'
 }
 
+const getCurrentUser = async (userId) => {
+    const user = await prismaClient.user.findUnique({
+        where: {
+            id: userId
+        },
+        select: {
+            email: true,
+            name: true,
+            role: true,
+            no_wa: true,
+            address: true,
+            createdAt: true
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(404, 'User not found')
+    }
+
+    return user
+}
+
+const updateProfile = async (userId, request) => {
+    const updateReq = validate(updateUserValidation, request)
+
+    const userExist = await prismaClient.user.count({
+        where: {
+            id: userId
+        }
+    })
+
+    if (userExist === 0) {
+        throw new ResponseError(404, 'User not found')
+    }
+
+    return prismaClient.user.update({
+        where: {
+            id: userId
+        },
+        data: updateReq,
+        select: {
+            id: true,
+            email:true,
+            name: true,
+            no_wa: true,
+            address: true,
+            role: true,
+            updatedAt: true
+        }
+    })
+}
+
 export const userService = {
     register,
     login,
-    logout
+    logout,
+    getCurrentUser,
+    updateProfile
 }

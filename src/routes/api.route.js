@@ -16,6 +16,7 @@ router.delete('/products/:id', authMiddleware, adminMiddleware, productControlle
 router.post('/users/register', userController.register)
 router.post('/users/login', progressiveLoginLimiter, userController.login)
 router.delete('/users/logout', authMiddleware, userController.logout)
+router.get('/users/current', authMiddleware, userController.getCurrentUser)
 
 router.post('/orders', authMiddleware, ordersLimiter, orderController.createOrder)
 router.get('/orders', authMiddleware, orderController.getOrders)

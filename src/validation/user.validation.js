@@ -26,10 +26,28 @@ const deleteAccountValidation = Joi.object({
     password: Joi.string().required()
 })
 
+const requestResetPaswordValidation = Joi.object({
+    email: Joi.string().email().required()
+})
+
+const resetPasswordValidation = Joi.object({
+    email: Joi.string().email().required(),
+    code: Joi.string().length(6).required(),
+    new_password: Joi.string().min(6).required()
+})
+
+const verifyEmailValidation = Joi.object({
+    email: Joi.string().email().required(),
+    code: Joi.string().length(6).required()
+})
+
 export {
     registerValidation,
     loginValidation,
     updateUserValidation,
     updatePasswordValidation,
-    deleteAccountValidation
+    deleteAccountValidation,
+    requestResetPaswordValidation,
+    resetPasswordValidation,
+    verifyEmailValidation
 }

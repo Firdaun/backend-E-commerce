@@ -1,9 +1,10 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { deleteAccountValidation, loginValidation, registerValidation, updatePasswordValidation, updateUserValidation } from '../validation/user.validation.js'
+import { deleteAccountValidation, loginValidation, registerValidation, requestResetPaswordValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, verifyEmailValidation } from '../validation/user.validation.js'
 import { validate } from '../validation/validation.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { otpService } from './otp.service.js'
 
 const register = async (request) => {
     const user = validate(registerValidation, request)
@@ -20,16 +21,19 @@ const register = async (request) => {
 
     user.password = await bcrypt.hash(user.password, 10)
 
-    return prismaClient.user.create({
+    const newUser = await prismaClient.user.create({
         data: user,
         select: {
             id: true,
             email: true,
             name: true,
-            role: true,
             createdAt: true
         }
     })
+
+    await otpService.generateOtp(newUser.id, 'VERIFY_EMAIL')
+    
+    return newUser
 }
 
 const login = async (request, ipAddress, deviceInfo) => {
@@ -49,6 +53,15 @@ const login = async (request, ipAddress, deviceInfo) => {
 
     if (!isPasswordValid) {
         throw new ResponseError(400, 'Incorrect email or password')
+    }
+
+    if (!user.is_verified) {
+        await prismaClient.session.deleteMany({
+            where: {
+                userId: user.id
+            }
+        })
+        throw new ResponseError(401, 'Please verify your email first to login')
     }
 
     const token = jwt.sign(
@@ -181,7 +194,7 @@ const updatePassword = async (userId, request) => {
     })
 
     if (!user) {
-        throw new ResponseError(404, 'User Not Found')
+        throw new ResponseError(404, 'User not found')
     }
 
     const isPasswordValid = await bcrypt.compare(updateReq.old_password, user.password)
@@ -212,7 +225,7 @@ const deleteAccount = async (userId, request) => {
     })
 
     if (!user) {
-        throw new ResponseError(404, 'User Not Found')
+        throw new ResponseError(404, 'User not found')
     }
 
     const isPasswordValid = await bcrypt.compare(req.password, user.password)
@@ -264,6 +277,90 @@ const deleteAccount = async (userId, request) => {
     })
 }
 
+const requestPasswordReset = async (request) => {
+    const req = validate(requestResetPaswordValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            email: req.email
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(404, 'User not found')
+    }
+
+    await otpService.generateOtp(user.id, 'RESET_PASSWORD')
+}
+
+const resetPassword = async (request) => {
+    const req = validate(resetPasswordValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            email: req.email
+        }
+    })
+
+    if(!user) {
+        throw new ResponseError(404, 'User not found')
+    }
+
+    await otpService.verifyOtp(user.id, req.code, 'RESET_PASSWORD')
+
+    const newPasswordHashed = await bcrypt.hash(req.new_password, 10)
+
+    await prismaClient.$transaction(async (prisma) => {
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: newPasswordHashed
+            }
+        })
+
+        await prisma.session.deleteMany({
+            where: {
+                userId: user.id
+            }
+        })
+    })
+}
+
+const verifyEmail = async (request) => {
+    const req = validate(verifyEmailValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            email: req.email
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(404, 'User not found')
+    }
+
+    if (user.is_verified) {
+        throw new ResponseError(400, 'User is already verified')
+    }
+
+    await otpService.verifyOtp(user.id, req.code, 'VERIFY_EMAIL')
+
+    return prismaClient.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            is_verified: true
+        },
+        select: {
+            email: true,
+            is_verified: true
+        }
+    })
+}
+
 export const userService = {
     register,
     login,
@@ -271,5 +368,8 @@ export const userService = {
     getCurrentUser,
     updateProfile,
     updatePassword,
-    deleteAccount
+    deleteAccount,
+    requestPasswordReset,
+    resetPassword,
+    verifyEmail
 }

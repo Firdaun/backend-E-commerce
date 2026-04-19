@@ -94,6 +94,39 @@ const deleteAccount = async (req, res, next) => {
     }
 }
 
+const requestPasswordReset = async (req, res, next) => {
+    try {
+        await userService.requestPasswordReset(req.body)
+        res.status(200).json({
+            message: 'Password reset OTP has been sent to your email'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const resetPassword = async (req, res, next) => {
+    try {
+        await userService.resetPassword(req.body)
+        res.status(200).json({
+            message: 'Password has been successfully reset. Please log in with your new password.'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const verifyEmail = async (req, res, next) => {
+    try {
+        await userService.verifyEmail(req.body)
+        res.status(200).json({
+            message: 'Email successfully verified. You can now login.'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const userController = {
     register,
     login,
@@ -101,5 +134,8 @@ export const userController = {
     getCurrentUser,
     updateProfile,
     updatePassword,
-    deleteAccount
+    deleteAccount,
+    requestPasswordReset,
+    resetPassword,
+    verifyEmail
 }

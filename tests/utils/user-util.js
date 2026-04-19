@@ -4,7 +4,7 @@ import { prismaClient } from '../../src/application/database.js'
 export const removeTestUser = async () => {
     await prismaClient.user.deleteMany({
         where: {
-            email: 'test@example.com'
+            email: 'test@example.com',
         }
     })
 }
@@ -21,7 +21,8 @@ export const createTestUser = async () => {
         data: {
             email: 'test@example.com',
             name: 'Fahrul Tester',
-            password: await bcrypt.hash('rahasia123', 10)
+            password: await bcrypt.hash('rahasia123', 10),
+            is_verified: true
         }
     })
 }
@@ -32,7 +33,8 @@ export const createTestAdmin = async () => {
             email: 'admin@example.com',
             name: 'Super Admin',
             password: await bcrypt.hash('rahasia123', 10),
-            role: 'ADMIN'
+            role: 'ADMIN',
+            is_verified: true
         }
     })
 }

@@ -35,7 +35,6 @@ describe('Reset Password Feature', () => {
                 .send({
                     email: 'test@example.com'
                 })
-            console.log(response.body.errors)
             
             expect(response.status).toBe(200)
             expect(response.body.message).toBeDefined()

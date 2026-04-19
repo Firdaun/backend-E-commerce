@@ -127,6 +127,17 @@ const verifyEmail = async (req, res, next) => {
     }
 }
 
+const resendVerificationEmail = async (req, res, next) => {
+    try {
+        await userService.resendVerificationEmail(req.body)
+        res.status(200).json({
+            message: 'A new verification OTP has been sent to your email'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const userController = {
     register,
     login,
@@ -137,5 +148,6 @@ export const userController = {
     deleteAccount,
     requestPasswordReset,
     resetPassword,
-    verifyEmail
+    verifyEmail,
+    resendVerificationEmail
 }

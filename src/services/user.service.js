@@ -1,6 +1,6 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { deleteAccountValidation, loginValidation, registerValidation, requestResetPaswordValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, verifyEmailValidation } from '../validation/user.validation.js'
+import { deleteAccountValidation, loginValidation, registerValidation, requestResetPaswordValidation, resendVerificationValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, verifyEmailValidation } from '../validation/user.validation.js'
 import { validate } from '../validation/validation.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -361,6 +361,26 @@ const verifyEmail = async (request) => {
     })
 }
 
+const resendVerificationEmail = async (request) => {
+    const req = validate(resendVerificationValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where:{
+            email: req.email
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(404, 'User not found')
+    }
+
+    if (user.is_verified) {
+        throw new ResponseError(400, 'User is already verified')
+    }
+
+    await otpService.generateOtp(user.id, 'VERIFY_EMAIL')
+}
+
 export const userService = {
     register,
     login,
@@ -371,5 +391,6 @@ export const userService = {
     deleteAccount,
     requestPasswordReset,
     resetPassword,
-    verifyEmail
+    verifyEmail,
+    resendVerificationEmail
 }

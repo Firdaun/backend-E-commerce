@@ -3,12 +3,20 @@ import supertest from 'supertest'
 import { web } from '../../src/application/web.js'
 import { prismaClient } from '../../src/application/database.js'
 
+jest.mock('../../src/utils/email-util.js', () => {
+    return {
+        sendOtpEmail: jest.fn().mockResolvedValue(true)
+    }
+})
+
 describe('POST /api/users/register', () => {
     beforeEach(async () => {
+        await prismaClient.otp.deleteMany()
         await removeTestUser()
         await removeHackerUser()
     })
     afterEach(async () => {
+        await prismaClient.otp.deleteMany()
         await removeTestUser()
         await removeHackerUser()
     })

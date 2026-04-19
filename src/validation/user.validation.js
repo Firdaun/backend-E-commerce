@@ -45,6 +45,15 @@ const resendVerificationValidation = Joi.object({
     email: Joi.string().email().required()
 })
 
+const requestUpdateEmailValidation = Joi.object({
+    new_email: Joi.string().email().required(),
+    password: Joi.string().required()
+})
+
+const verifyUpdateEmailValidation = Joi.object({
+    code: Joi.string().length(6).required()
+})
+
 export {
     registerValidation,
     loginValidation,
@@ -54,5 +63,7 @@ export {
     requestResetPaswordValidation,
     resetPasswordValidation,
     verifyEmailValidation,
-    resendVerificationValidation
+    resendVerificationValidation,
+    requestUpdateEmailValidation,
+    verifyUpdateEmailValidation
 }

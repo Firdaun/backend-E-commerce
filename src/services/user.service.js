@@ -1,6 +1,6 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { deleteAccountValidation, loginValidation, registerValidation, requestResetPaswordValidation, resendVerificationValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, verifyEmailValidation } from '../validation/user.validation.js'
+import { deleteAccountValidation, loginValidation, registerValidation, requestResetPaswordValidation, requestUpdateEmailValidation, resendVerificationValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, verifyEmailValidation, verifyUpdateEmailValidation } from '../validation/user.validation.js'
 import { validate } from '../validation/validation.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -381,6 +381,53 @@ const resendVerificationEmail = async (request) => {
     await otpService.generateOtp(user.id, 'VERIFY_EMAIL')
 }
 
+const requestUpdateEmail = async (userId, request) => {
+    const req = validate(requestUpdateEmailValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            id: userId
+        }
+    })
+
+    const isPasswordValid = await bcrypt.compare(req.password, user.password)
+    if (!isPasswordValid) {
+        throw new ResponseError(400, 'Invalid password')
+    }
+
+    const emailExist = await prismaClient.user.count({
+        where: {
+            email: req.new_email
+        }
+    })
+
+    if (emailExist > 0) {
+        throw new ResponseError(400, 'Email is already in use')
+    }
+
+    await otpService.generateOtp(userId, 'UPDATE_EMAIL', req.new_email)
+}
+
+const verifyUpdateEmail = async (userId, request) => {
+    const req = validate(verifyUpdateEmailValidation, request)
+
+    const otp = await otpService.verifyOtp(userId, req.code, 'UPDATE_EMAIL')
+
+    return prismaClient.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            email: otp.newEmail
+        },
+        select: {
+            id: true,
+            email: true,
+            name: true
+        }
+    })
+}
+
 export const userService = {
     register,
     login,
@@ -392,5 +439,7 @@ export const userService = {
     requestPasswordReset,
     resetPassword,
     verifyEmail,
-    resendVerificationEmail
+    resendVerificationEmail,
+    requestUpdateEmail,
+    verifyUpdateEmail
 }

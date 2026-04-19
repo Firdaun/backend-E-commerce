@@ -2,7 +2,7 @@ import { prismaClient } from "../application/database.js"
 import { ResponseError } from "../error/response.error.js"
 import { sendOtpEmail } from "../utils/email-util.js"
 
-const generateOtp = async (userId, type) => {
+const generateOtp = async (userId, type, newEmail = null) => {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
 
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000)
@@ -12,20 +12,25 @@ const generateOtp = async (userId, type) => {
             code: otpCode,
             type: type,
             expiresAt: expiresAt,
-            userId: userId
+            userId: userId,
+            newEmail: newEmail
         }
     })
 
-    const user = await prismaClient.user.findUnique({
-        where: {
-            id: userId
-        },
-        select: {
-            email: true
-        }
-    })
+    let targetEmail = newEmail
+    if (!targetEmail) {
+        const user = await prismaClient.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                email: true
+            }
+        })
+        targetEmail = user.email
+    }
 
-    await sendOtpEmail(user.email, otpCode)
+    await sendOtpEmail(targetEmail, otpCode)
 
     return otp
 }
@@ -36,6 +41,11 @@ const verifyOtp = async (userId, code, type) => {
             userId: userId,
             code: code,
             type: type
+        },
+        select: {
+            id: true,
+            expiresAt: true,
+            newEmail: true
         }
     })
 
@@ -58,7 +68,7 @@ const verifyOtp = async (userId, code, type) => {
         }
     })
 
-    return true
+    return otp
 }
 
 export const otpService = {

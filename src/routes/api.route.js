@@ -24,6 +24,8 @@ router.post('/users/reset-password/request', userController.requestPasswordReset
 router.post('/users/reset-password', userController.resetPassword)
 router.post('/users/verify-email', userController.verifyEmail)
 router.post('/users/verify-email/resend', userController.resendVerificationEmail)
+router.patch('/users/current/email/request', authMiddleware, userController.requestUpdateEmail)
+router.patch('/users/current/email/verify', authMiddleware, userController.verifyUpdateEmail)
 
 router.post('/orders', authMiddleware, ordersLimiter, orderController.createOrder)
 router.get('/orders', authMiddleware, orderController.getOrders)

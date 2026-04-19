@@ -138,6 +138,31 @@ const resendVerificationEmail = async (req, res, next) => {
     }
 }
 
+const requestUpdateEmail = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        await userService.requestUpdateEmail(userId, req.body)
+        res.status(200).json({
+            message: 'OTP has been sent to your NEW email'
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const verifyUpdateEmail = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        const result = await userService.verifyUpdateEmail(userId, req.body)
+        res.status(200).json({
+            message: 'Email successfully updated',
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export const userController = {
     register,
     login,
@@ -149,5 +174,7 @@ export const userController = {
     requestPasswordReset,
     resetPassword,
     verifyEmail,
-    resendVerificationEmail
+    resendVerificationEmail,
+    requestUpdateEmail,
+    verifyUpdateEmail
 }

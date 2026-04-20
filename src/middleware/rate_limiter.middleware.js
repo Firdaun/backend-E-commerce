@@ -68,21 +68,27 @@ export const progressiveLoginLimiter = (req,res, next) => {
 export const ordersLimiter = rateLimit({
     windowMs: 3 * 60 * 1000,
     max: 10,
-    message: {
-        errors: 'Please be patient! The kitchen is cooking your order. Please allow 3 minutes for another order'
+    handler: (req, res, _, option) => {
+        const remainingSeconds = Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / (1000 * 60))
+        res.status(option.statusCode).json({
+            errors: `Please be patient! The kitchen is cooking your order. Please allow ${remainingSeconds} minutes for another order`
+        })
     }
 })
 
 
 // OTP LIMITER
 
-const isTestEnv = (req) => process.env.NODE_ENV === 'test'
+const isTestEnv = () => process.env.NODE_ENV === 'test'
 export const otpCooldownLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 1,
     skip: isTestEnv,
-    message: {
-        errors: 'Harap tunggu 60 detik sebelum meminta OTP kembali.'
+    handler: (req, res, _next, options) => {
+        const remainingSeconds = Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / 1000)
+        res.status(options.statusCode).json({
+            errors: `Please wait ${remainingSeconds} seconds before requesting OTP again.`
+        })
     },
     standardHeaders: true,
     legacyHeaders: false,
@@ -92,8 +98,17 @@ export const otpBlockLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     max: 3,
     skip: isTestEnv,
-    message: {
-        errors: 'Anda telah mencapai batas maksimal permintaan OTP. Alamat IP Anda diblokir dari fitur ini selama 24 jam.'
+    skipFailedRequests: true,
+    handler: (req, res, _next, options) => {
+        const remainingMs = req.rateLimit.resetTime.getTime() - Date.now()
+        const totalMinutes = Math.ceil(remainingMs / (1000 * 60))
+        const hours = Math.floor(totalMinutes / 60)
+        const minutes = totalMinutes % 60
+        let timeText = hours > 0 ? `${hours} hours and ${minutes} minutes` : `${minutes} minutes`
+
+        res.status(options.statusCode).json({
+            errors: `You have reached the maximum number of OTP requests. Your IP address is blocked from this feature for ${timeText}.`
+        })
     },
     standardHeaders: true,
     legacyHeaders: false,
@@ -106,8 +121,11 @@ export const registerLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     max: 3,
     skip: isTestEnv,
-    message: {
-        errors: 'Terlalu banyak permintaan pembuatan akun dari alamat IP ini. Silakan coba lagi dalam 24 jam ke depan.'
+    handler: (req, res, _, options) => {
+        const remainingHours = Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / (1000 * 60 * 60))
+        res.status(options.statusCode).json({
+            errors: `There are too many account creation requests from this IP address. Please try again in ${remainingHours} hours.`
+        })
     },
     standardHeaders: true,
     legacyHeaders: false,

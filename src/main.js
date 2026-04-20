@@ -1,6 +1,7 @@
 import { web } from './application/web.js'
 import dotenv from 'dotenv'
 import { initWebSocket } from './application/ws.js'
+import { initScheduler } from './application/scheduler.js'
 
 dotenv.config()
 
@@ -11,3 +12,4 @@ const server = web.listen(PORT, () => {
 })
 
 initWebSocket(server)
+initScheduler()

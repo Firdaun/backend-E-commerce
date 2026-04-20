@@ -26,7 +26,7 @@ const getOrders = async (req, res, next) => {
     }
 }
 
-const getAllOrders = async (_, res, next) => {
+const getAllOrders = async (_req, res, next) => {
     try {
         const result = await orderService.getAllOrders()
         res.status(200).json({

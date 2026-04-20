@@ -5,10 +5,10 @@ let wss
 export const initWebSocket = (server) => {
     wss = new WebSocketServer({server})
 
-    wss.on('connection', () => {
+    wss.on('connection', (ws) => {
         console.log('Admin Dashboard Connected To WebSocket')
         
-        wss.on('close', () => {
+        ws.on('close', () => {
             console.log('Admin Dashboard Disconnected From WebSocket')
         })
     })

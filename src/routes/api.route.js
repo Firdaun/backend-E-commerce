@@ -21,10 +21,10 @@ router.post('/users/login', progressiveLoginLimiter, userController.login)
 
 // Verifikasi Email
 router.post('/users/verify-email', userController.verifyEmail)
-router.post('/users/verify-email/resend', otpCooldownLimiter, otpBlockLimiter, userController.resendVerificationEmail)
+router.post('/users/verify-email/resend', otpBlockLimiter, otpCooldownLimiter, userController.resendVerificationEmail)
 
 // Lupa Password
-router.post('/users/reset-password/request', otpCooldownLimiter, otpBlockLimiter, userController.requestPasswordReset)
+router.post('/users/reset-password/request', otpBlockLimiter, otpCooldownLimiter, userController.requestPasswordReset)
 router.post('/users/reset-password', userController.resetPassword)
 
 // Katalog (Biasanya melihat produk tidak perlu login)
@@ -46,7 +46,7 @@ router.delete('/users/logout', authMiddleware, userController.logout)
 
 // Keamanan Akun
 router.patch('/users/current/password', authMiddleware, userController.updatePassword)
-router.patch('/users/current/email/request', authMiddleware, otpCooldownLimiter, otpBlockLimiter, userController.requestUpdateEmail)
+router.patch('/users/current/email/request', authMiddleware, otpBlockLimiter, otpCooldownLimiter, userController.requestUpdateEmail)
 router.patch('/users/current/email/verify', authMiddleware, userController.verifyUpdateEmail)
 
 // Transaksi (Pesanan)

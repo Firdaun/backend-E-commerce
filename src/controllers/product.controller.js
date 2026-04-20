@@ -1,6 +1,6 @@
 import { productService } from '../services/product.service.js'
 
-const getProducts = async (_, res, next) => {
+const getProducts = async (_req, res, next) => {
     try {
         const result = await productService.getAllProducts()
         res.status(200).json({

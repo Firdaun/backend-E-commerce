@@ -5,6 +5,13 @@ import { sendOtpEmail } from "../utils/email-util.js"
 const generateOtp = async (userId, type, newEmail = null) => {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
 
+    await prismaClient.otp.deleteMany({
+        where: {
+            userId: userId,
+            type: type
+        }
+    })
+
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000)
 
     const otp = await prismaClient.otp.create({
@@ -65,9 +72,10 @@ const verifyOtp = async (userId, code, type) => {
         throw new ResponseError(400, 'OTP code has expired')
     }
 
-    await prismaClient.otp.delete({
+    await prismaClient.otp.deleteMany({
         where: {
-            id: otp.id
+            userId: userId,
+            type: type
         }
     })
 

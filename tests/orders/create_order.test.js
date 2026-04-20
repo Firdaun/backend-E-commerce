@@ -4,6 +4,7 @@ import { web } from '../../src/application/web.js'
 import { createTestProduct, removeAllTestProducts } from '../utils/product-util.js'
 import { prismaClient } from '../../src/application/database.js'
 import { removeAllTestOrders } from '../utils/order-util.js'
+import { removeAllTestCarts } from '../utils/cart-util.js'
 
 describe('POST /api/orders', () => {
     let token = ''
@@ -14,6 +15,7 @@ describe('POST /api/orders', () => {
         await removeAllTestOrders()
         await removeTestUser()
         await removeAllTestProducts()
+        await removeAllTestCarts()
 
         await createTestUser()
         const loginResponse = await supertest(web)
@@ -42,6 +44,7 @@ describe('POST /api/orders', () => {
         await removeAllTestOrders()
         await removeTestUser()
         await removeAllTestProducts()
+        await removeAllTestCarts()
     })
 
     afterAll(async () => {
@@ -219,5 +222,48 @@ describe('POST /api/orders', () => {
 
         expect(response.status).toBe(400)
         expect(response.body.errors).toContain('is not allowed')
+    })
+
+    it('should create order from cart and empty the cart if orderItems is not provided', async () => {
+        await supertest(web)
+            .post('/api/carts')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                productId: availableProductId,
+                quantity: 2,
+                spice_level: 3
+            })
+
+        const response = await supertest(web)
+            .post('/api/orders')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                username: 'Tester Checkout Keranjang',
+                no_wa: '08123456789',
+                address: 'Jalan Keranjang No 1'
+            })
+
+        expect(response.status).toBe(201)
+        expect(response.body.data.total_price).toBe(30000)
+
+        const cartResponse = await supertest(web)
+            .get('/api/carts')
+            .set('x-api-key', `Bearer ${token}`)
+            
+        expect(cartResponse.body.data.cartItems.length).toBe(0)
+    })
+
+    it('should reject order if orderItems is not provided AND cart is empty', async () => {
+        const response = await supertest(web)
+            .post('/api/orders')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                username: 'Tester Checkout Kosong',
+                no_wa: '08123456789',
+                address: 'Jalan Keranjang No 1'
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('Keranjang Anda masih kosong')
     })
 })

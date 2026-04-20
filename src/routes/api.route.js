@@ -5,6 +5,7 @@ import { userController } from '../controllers/user.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
 import { adminMiddleware } from '../middleware/admin.middleware.js'
 import { ordersLimiter, otpBlockLimiter, otpCooldownLimiter, progressiveLoginLimiter, registerLimiter } from '../middleware/rate_limiter.middleware.js'
+import { cartController } from '../controllers/cart.controller.js'
 
 const router = express.Router()
 
@@ -48,6 +49,12 @@ router.delete('/users/logout', authMiddleware, userController.logout)
 router.patch('/users/current/password', authMiddleware, userController.updatePassword)
 router.patch('/users/current/email/request', authMiddleware, otpBlockLimiter, otpCooldownLimiter, userController.requestUpdateEmail)
 router.patch('/users/current/email/verify', authMiddleware, userController.verifyUpdateEmail)
+
+// Keranjang Belanja (Cart)
+router.get('/carts', authMiddleware, cartController.getCart)
+router.post('/carts', authMiddleware, cartController.addToCart)
+router.patch('/carts/:itemId', authMiddleware, cartController.updateCartItem)
+router.delete('/carts/:itemId', authMiddleware, cartController.removeCartItem)
 
 // Transaksi (Pesanan)
 router.post('/orders', authMiddleware, ordersLimiter, orderController.createOrder)

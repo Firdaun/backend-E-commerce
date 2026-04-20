@@ -10,7 +10,7 @@ const createOrderValidation = Joi.object({
             quantity: Joi.number().min(1).max(50).required(),
             spice_level: Joi.number().min(0).max(5).required()
         })
-    ).min(1).required()
+    ).min(1).required().optional()
 })
 
 const updateStatusValidation = Joi.object({

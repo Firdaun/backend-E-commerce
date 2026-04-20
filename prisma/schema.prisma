@@ -19,6 +19,7 @@ model Product {
   updatedAt    DateTime @updatedAt
 
   orderItems OrderItem[]
+  cartItems  CartItem[]
 }
 
 model Order {
@@ -63,6 +64,7 @@ model User {
   orders   Order[]
   sessions Session[]
   otp      Otp[]
+  cart     Cart?
 }
 
 model Session {
@@ -86,4 +88,27 @@ model Otp {
   newEmail  String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id          Int      @id @default(autoincrement())
+  cartId      Int
+  productId   Int
+  quantity    Int
+  spice_level Int     
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
 }

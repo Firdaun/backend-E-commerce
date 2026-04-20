@@ -142,4 +142,25 @@ describe('POST /api/users/login', () => {
         expect(savedDeviceInfos).not.toContain('Device-1')
         expect(savedDeviceInfos).toContain('Device-4')
     })
+
+    it('should reject login if user email is not verified', async () => {
+        await createTestUser()
+        await prismaClient.user.update({
+            where: { email: 'test@example.com' },
+            data: { is_verified: false }
+        })
+
+        const unverifiedIP = '192.168.1.200'
+
+        const response = await supertest(web)
+            .post('/api/users/login')
+            .set('X-Forwarded-For', unverifiedIP)
+            .send({
+                email: 'test@example.com',
+                password: 'rahasia123'
+            })
+
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toContain('Please verify your email first')
+    })
 })

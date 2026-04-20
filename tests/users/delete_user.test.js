@@ -78,4 +78,29 @@ describe('DELETE /api/users/current', () => {
         expect(response.status).toBe(401)
         expect(response.body.errors).toBeDefined()
     })
+
+    it('should delete account and wipe all related sessions and orders (Cascade Delete)', async () => {
+        // Buat pesanan palsu sebelum akun dihapus
+        const user = await prismaClient.user.findUnique({ where: { email: 'test@example.com' } })
+        await prismaClient.order.create({
+            data: {
+                userId: user.id, username: 'Test Delete', no_wa: '081', address: '-', total_price: 10000, status: 'Menunggu'
+            }
+        })
+
+        const response = await supertest(web)
+            .delete('/api/users/current')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({ password: 'rahasia123' })
+
+        expect(response.status).toBe(200)
+
+        // Pastikan User terhapus
+        const checkUser = await prismaClient.user.count({ where: { email: 'test@example.com' } })
+        expect(checkUser).toBe(0)
+
+        // Pastikan tabel Order milik user ini juga benar-benar BERSIH
+        const checkOrders = await prismaClient.order.count({ where: { userId: user.id } })
+        expect(checkOrders).toBe(0)
+    })
 })

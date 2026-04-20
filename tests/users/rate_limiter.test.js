@@ -77,7 +77,7 @@ describe('Rate Limiter Security Tests', () => {
                 .send({ email: 'limiter4@example.com', password: 'password123', name: 'User 4' })
             
             expect(response.status).toBe(429)
-            expect(response.body.errors).toContain('Terlalu banyak permintaan')
+            expect(response.body.errors).toContain('There are too many account creation')
         })
     })
     describe('OTP Cooldown Limiter (Lapis 1)', () => {
@@ -106,7 +106,7 @@ describe('Rate Limiter Security Tests', () => {
                 .send({ email: 'limiter_otp@example.com' })
             
             expect(response.status).toBe(429)
-            expect(response.body.errors).toContain('Harap tunggu 60 detik')
+            expect(response.body.errors).toContain('Please wait 60 seconds')
         })
     })
 })

@@ -56,4 +56,23 @@ describe('GET /api/user/current', () => {
         expect(response.status).toBe(401)
         expect(response.body.errors).toBeDefined()
     })
+
+    it('should reject access if token is valid but session is deleted from database (Hijacked/Kicked)', async () => {
+        await createTestUser()
+        const loginResponse = await supertest(web).post('/api/users/login')
+            .send({ email: 'test@example.com', password: 'rahasia123' })
+        const validToken = loginResponse.body.data.token
+
+        // HAPUS SESI SECARA PAKSA DI DATABASE
+        await prismaClient.session.deleteMany({
+            where: { token: validToken }
+        })
+
+        const response = await supertest(web)
+            .get('/api/users/current')
+            .set('x-api-key', `Bearer ${validToken}`)
+
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toContain('The session has expired')
+    })
 })

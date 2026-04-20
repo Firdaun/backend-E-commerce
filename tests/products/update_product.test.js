@@ -43,7 +43,7 @@ describe('PUT /api/products/:id', () => {
         testProductId = product.id
     })
 
-    afterEach(async () => {
+    afterAll(async () => {
         await prismaClient.$disconnect()
     })
 

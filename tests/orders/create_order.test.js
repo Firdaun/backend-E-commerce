@@ -134,7 +134,8 @@ describe('POST /api/orders', () => {
                 address: "<script>alert('Hack')</script> Alamat Palsu",
                 orderItems: [{
                     productId: availableProductId,
-                    quantity: 1, spice_level: 1
+                    quantity: 1,
+                    spice_level: 1
                 }]
             })
 
@@ -198,5 +199,25 @@ describe('POST /api/orders', () => {
 
         expect(response.status).toBe(400)
         expect(response.body.errors).toContain('quantity')
+    })
+
+    it('should reject order if user injects unknown fields (like price manipulation)', async () => {
+        const response = await supertest(web)
+            .post('/api/orders')
+            .set('x-api-key', `Bearer ${token}`)
+            .send({
+                username: 'Tester Order',
+                no_wa: '08123456789',
+                address: 'Jalan Testing',
+                orderItems: [{
+                    productId: availableProductId,
+                    quantity: 1,
+                    spice_level: 1,
+                    price: 1000
+                }]
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toContain('is not allowed')
     })
 })

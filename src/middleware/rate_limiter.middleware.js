@@ -1,4 +1,8 @@
 import rateLimit from 'express-rate-limit'
+
+
+// LOGIN LIMITER
+
 const loginTracker = new Map()
 export const progressiveLoginLimiter = (req,res, next) => {
     const ip = req.ip
@@ -59,10 +63,52 @@ export const progressiveLoginLimiter = (req,res, next) => {
 }
 
 
+// ORDER LIMITER
+
 export const ordersLimiter = rateLimit({
     windowMs: 3 * 60 * 1000,
     max: 10,
     message: {
         errors: 'Please be patient! The kitchen is cooking your order. Please allow 3 minutes for another order'
     }
+})
+
+
+// OTP LIMITER
+
+const isTestEnv = (req) => process.env.NODE_ENV === 'test'
+export const otpCooldownLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 1,
+    skip: isTestEnv,
+    message: {
+        errors: 'Harap tunggu 60 detik sebelum meminta OTP kembali.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+})
+
+export const otpBlockLimiter = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000,
+    max: 3,
+    skip: isTestEnv,
+    message: {
+        errors: 'Anda telah mencapai batas maksimal permintaan OTP. Alamat IP Anda diblokir dari fitur ini selama 24 jam.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+})
+
+
+// REGISTER LIMITER
+
+export const registerLimiter = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000,
+    max: 3,
+    skip: isTestEnv,
+    message: {
+        errors: 'Terlalu banyak permintaan pembuatan akun dari alamat IP ini. Silakan coba lagi dalam 24 jam ke depan.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
 })

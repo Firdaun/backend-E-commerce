@@ -14,6 +14,9 @@ const generateOtp = async (userId, type, newEmail = null) => {
             expiresAt: expiresAt,
             userId: userId,
             newEmail: newEmail
+        },
+        select: {
+            expiresAt: true
         }
     })
 

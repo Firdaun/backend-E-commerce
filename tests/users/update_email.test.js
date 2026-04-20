@@ -5,7 +5,6 @@ import { createTestUser, removeTestUser } from '../utils/user-util.js'
 import { sendOtpEmail } from '../../src/utils/email-util.js'
 import bcrypt from 'bcrypt'
 
-// Mocking Nodemailer
 jest.mock('../../src/utils/email-util.js', () => {
     return {
         sendOtpEmail: jest.fn().mockResolvedValue(true)
@@ -18,13 +17,11 @@ describe('Update Email Feature', () => {
     beforeEach(async () => {
         await prismaClient.otp.deleteMany()
         await removeTestUser()
-        // Bersihkan user tambahan yang mungkin terbuat saat test
         await prismaClient.user.deleteMany({ where: { email: 'email_baru_berhasil@example.com' } })
         await prismaClient.user.deleteMany({ where: { email: 'other@example.com' } })
         
         await createTestUser()
 
-        // Login untuk mendapatkan token
         const loginResponse = await supertest(web)
             .post('/api/users/login')
             .send({
@@ -58,11 +55,9 @@ describe('Update Email Feature', () => {
             expect(response.status).toBe(200)
             expect(response.body.message).toBeDefined()
 
-            // Pastikan email dikirim ke ALAMAT BARU, bukan alamat lama
             expect(sendOtpEmail).toHaveBeenCalledTimes(1)
             expect(sendOtpEmail).toHaveBeenCalledWith('newemail@example.com', expect.any(String))
 
-            // Pastikan database OTP menyimpan data newEmail
             const otpInDb = await prismaClient.otp.findFirst({
                 where: { type: 'UPDATE_EMAIL' }
             })
@@ -85,7 +80,6 @@ describe('Update Email Feature', () => {
         })
 
         it('should reject if new email is already registered by another user', async () => {
-            // Buat akun orang lain secara manual
             await prismaClient.user.create({
                 data: {
                     email: 'other@example.com',
@@ -112,7 +106,6 @@ describe('Update Email Feature', () => {
         let validOtpCode = '654321'
 
         beforeEach(async () => {
-            // Suntikkan OTP secara manual untuk testing tahap verifikasi
             const user = await prismaClient.user.findUnique({ where: { email: 'test@example.com' } })
             await prismaClient.otp.create({
                 data: {
@@ -136,13 +129,11 @@ describe('Update Email Feature', () => {
             expect(response.status).toBe(200)
             expect(response.body.data.email).toBe('email_baru_berhasil@example.com')
 
-            // Verifikasi bahwa email di database benar-benar berubah
             const checkUser = await prismaClient.user.findUnique({
                 where: { email: 'email_baru_berhasil@example.com' }
             })
             expect(checkUser).toBeDefined()
 
-            // Verifikasi OTP otomatis terhapus
             const otpCount = await prismaClient.otp.count()
             expect(otpCount).toBe(0)
         })

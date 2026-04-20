@@ -28,7 +28,6 @@ describe('POST /api/users/verify-email/resend', () => {
     })
 
     it('should resend OTP successfully if user is not verified', async () => {
-        // Manipulasi user menjadi belum terverifikasi khusus untuk test ini
         await prismaClient.user.update({
             where: { email: 'test@example.com' },
             data: { is_verified: false }

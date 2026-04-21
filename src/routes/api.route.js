@@ -30,6 +30,7 @@ router.post('/users/reset-password', userController.resetPassword)
 
 // Katalog (Biasanya melihat produk tidak perlu login)
 router.get('/products', productController.getProducts)
+router.get('/products/:id', productController.getProductById)
 
 
 /**

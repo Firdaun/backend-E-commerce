@@ -11,6 +11,18 @@ const getProducts = async (_req, res, next) => {
     }
 }
 
+const getProductById = async (req, res, next) => {
+    try {
+        const productId = req.params.id
+        const result = await productService.getProductById(productId)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 const createProduct = async (req, res, next) => {
     try {
         const result = await productService.createProduct(req.body)
@@ -52,5 +64,6 @@ export const productController = {
     getProducts,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getProductById
 }

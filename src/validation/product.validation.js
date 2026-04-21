@@ -18,7 +18,10 @@ const updateProductValidation = Joi.object({
     is_available: Joi.boolean().optional()
 })
 
+const getProductByIdValidation = Joi.number().min(1).positive().required()
+
 export {
     createProductValidation,
-    updateProductValidation
+    updateProductValidation,
+    getProductByIdValidation
 }

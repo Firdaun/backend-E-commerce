@@ -1,7 +1,25 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { createProductValidation, updateProductValidation } from '../validation/product.validation.js'
+import { createProductValidation, getProductByIdValidation, updateProductValidation } from '../validation/product.validation.js'
 import { validate } from '../validation/validation.js'
+
+const getProductById = async (id) => {
+    const validId = validate(getProductByIdValidation, id);
+
+    // 2. Query ke database
+    const product = await prismaClient.product.findUnique({
+        where: {
+            id: parseInt(validId)
+        }
+    });
+
+    if (!product) {
+        throw new ResponseError(404, "Product not found")
+        
+    }
+
+    return product;
+}
 
 const getAllProducts = async () => {
     return await prismaClient.product.findMany({
@@ -73,5 +91,6 @@ export const productService = {
     getAllProducts,
     createProduct,
     updateProduct,
-    deleteProduct   
+    deleteProduct,
+    getProductById
 }

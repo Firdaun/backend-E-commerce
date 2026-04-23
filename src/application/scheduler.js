@@ -2,7 +2,7 @@ import cron from 'node-cron'
 import { prismaClient } from './database.js'
 
 export const initScheduler = () => {
-    cron.schedule('*/5 * * * *', async () => {
+    cron.schedule('0 0 * * *', async () => {
         try {
             const now = new Date()
             

@@ -101,8 +101,7 @@ const login = async (request, ipAddress, deviceInfo) => {
         user: {
             id: user.id,
             email: user.email,
-            name: user.name,
-            role: user.role
+            name: user.name
         }
     }
 }

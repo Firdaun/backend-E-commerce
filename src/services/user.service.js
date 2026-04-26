@@ -173,7 +173,6 @@ const updateProfile = async (userId, request) => {
             name: true,
             no_wa: true,
             address: true,
-            role: true,
             updatedAt: true
         }
     })

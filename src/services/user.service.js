@@ -168,11 +168,6 @@ const updateProfile = async (userId, request) => {
         },
         data: updateReq,
         select: {
-            id: true,
-            email: true,
-            name: true,
-            no_wa: true,
-            address: true,
             updatedAt: true
         }
     })

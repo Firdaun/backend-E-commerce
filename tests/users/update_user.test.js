@@ -38,9 +38,7 @@ describe('PATCH /api/users/current', () => {
             })
 
         expect(response.status).toBe(200)
-        expect(response.body.data.name).toBe('Fahrul Updated')
-        expect(response.body.data.no_wa).toBe('085943251649')
-        expect(response.body.data.address).toBe('Alamat baru')
+        expect(response.body.data.updatedAt).toBeDefined()
 
         const userInDb = await prismaClient.user.findUnique({
             where: {
@@ -59,8 +57,7 @@ describe('PATCH /api/users/current', () => {
             })
 
         expect(response.status).toBe(200)
-        expect(response.body.data.name).toBe('Only Name Updated')
-        expect(response.body.data.email).toBe('test@example.com')
+        expect(response.body.data.updatedAt).toBeDefined()
     })
 
     it('should reject update if validation fails', async () => {

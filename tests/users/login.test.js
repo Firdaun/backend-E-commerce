@@ -67,7 +67,7 @@ describe('POST /api/users/login', () => {
             })
 
         expect(response.status).toBe(400)
-        expect(response.body.errors).toContain('\"email\" is not allowed to be empty. \"password\" is not allowed to be empty, nu baleg bos')
+        expect(response.body.errors).toContain('\"email\" is not allowed to be empty. \"password\" is not allowed to be empty')
     })
 
     it('should reject login if email is not registered', async () => {

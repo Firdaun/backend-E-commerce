@@ -1,6 +1,6 @@
 import { prismaClient } from '../application/database.js'
 import { ResponseError } from '../error/response.error.js'
-import { createProductValidation, getProductByIdValidation, updateProductValidation } from '../validation/product.validation.js'
+import { createProductValidation, createBulkProductValidation, getProductByIdValidation, updateProductValidation } from '../validation/product.validation.js'
 import { validate } from '../validation/validation.js'
 
 const getProductById = async (id) => {
@@ -30,11 +30,17 @@ const getAllProducts = async () => {
 }
 
 const createProduct = async (requestData) => {
-    const product = validate(createProductValidation, requestData)
-
-    return await prismaClient.product.create({
-        data: product
-    })
+    if (Array.isArray(requestData)) {
+        const products = validate(createBulkProductValidation, requestData)
+        return await prismaClient.product.createMany({
+            data: products
+        })
+    } else {
+        const product = validate(createProductValidation, requestData)
+        return await prismaClient.product.create({
+            data: product
+        })
+    }
 }
 
 const updateProduct = async (productId, request) => {

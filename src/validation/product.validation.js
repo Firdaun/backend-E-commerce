@@ -9,6 +9,8 @@ const createProductValidation = Joi.object({
     is_available: Joi.boolean().optional()
 })
 
+const createBulkProductValidation = Joi.array().items(createProductValidation).min(1).required()
+
 const updateProductValidation = Joi.object({
     variant: Joi.string().max(100).optional(),
     price: Joi.number().min(0).optional(),
@@ -22,6 +24,7 @@ const getProductByIdValidation = Joi.number().min(1).positive().required()
 
 export {
     createProductValidation,
+    createBulkProductValidation,
     updateProductValidation,
     getProductByIdValidation
 }

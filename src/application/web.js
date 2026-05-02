@@ -5,8 +5,8 @@ import { errorMiddleware } from '../middleware/error.middleware.js'
 
 export const web = express()
 
+web.use('/photos', express.static('public/photos'))
 web.set('trust proxy', 1)
-
 web.use(cors())
 web.use(express.json())
 

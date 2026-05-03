@@ -284,6 +284,8 @@ const requestPasswordReset = async (request) => {
     }
 
     await otpService.generateOtp(user.id, 'RESET_PASSWORD')
+
+    return user.email
 }
 
 const resetPassword = async (request) => {

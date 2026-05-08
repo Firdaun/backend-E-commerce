@@ -179,12 +179,8 @@ const updateOrderStatus = async (orderId, request) => {
         data: {
             status: statusReq.status
         },
-        include: {
-            orderItems: {
-                include: {
-                    product: true
-                }
-            }
+        select: {
+            createdAt: true
         }
     })
 }

@@ -42,7 +42,7 @@ const updateOrderStatus = async (req, res, next) => {
         const orderId = parseInt(req.params.id)
         const result = await orderService.updateOrderStatus(orderId, req.body)
         res.status(200).json({
-            message: `Order status #${orderId} successfully changed to ${result.status}`,
+            message: `status changed successfully`,
             data: result
         })
     } catch (e) {

@@ -12,11 +12,11 @@ const createProductValidation = Joi.object({
 const createBulkProductValidation = Joi.array().items(createProductValidation).min(1).required()
 
 const updateProductValidation = Joi.object({
-    variant: Joi.string().max(100).optional(),
+    variant: Joi.string().max(100).optional().antiXSS(),
     price: Joi.number().min(0).optional(),
     spice_level: Joi.number().min(0).max(5).optional(),
-    description: Joi.string().optional(),
-    image_url: Joi.string().uri().optional(),
+    description: Joi.string().optional().antiXSS(),
+    image_url: Joi.string().uri().optional().antiXSS(),
     is_available: Joi.boolean().optional()
 })
 

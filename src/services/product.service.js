@@ -22,11 +22,7 @@ const getProductById = async (id) => {
 }
 
 const getAllProducts = async () => {
-    return await prismaClient.product.findMany({
-        where: {
-            is_available: true
-        }
-    })
+    return await prismaClient.product.findMany()
 }
 
 const createProduct = async (requestData) => {

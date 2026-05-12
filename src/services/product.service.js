@@ -29,12 +29,18 @@ const createProduct = async (requestData) => {
     if (Array.isArray(requestData)) {
         const products = validate(createBulkProductValidation, requestData)
         return await prismaClient.product.createMany({
-            data: products
+            data: products,
+            select: {
+                createdAt: true
+            }
         })
     } else {
         const product = validate(createProductValidation, requestData)
         return await prismaClient.product.create({
-            data: product
+            data: product,
+            select: {
+                createdAt: true
+            }
         })
     }
 }

@@ -37,6 +37,7 @@ const logout = async (req, res, next) => {
         const result = await userService.logout(req.token)
 
         res.status(200).json({
+            message: 'Logout successful',
             data: result
         })
     } catch (e) {

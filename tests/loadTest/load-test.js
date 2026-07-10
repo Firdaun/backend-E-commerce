@@ -5,7 +5,7 @@ import { SharedArray } from 'k6/data';
 const users = new SharedArray('users', function () {
   let accountList = [];
   // Looping dari 1 sampai 100 (Karena kamu sekarang punya tester1 s/d tester100)
-  for (let i = 1; i <= 10000; i++) {
+  for (let i = 1; i <= 500; i++) {
     accountList.push({ 
         email: `tester${i}@mail.com`, 
         password: 'password123' 
@@ -16,9 +16,8 @@ const users = new SharedArray('users', function () {
 
 export const options = {
   stages: [
-    { duration: '10s', target: 100 },
-    { duration: '20s', target: 500 },
-    { duration: '20s', target: 1000 },
+    { duration: '20s', target: 100 },
+    { duration: '30s', target: 150 },
     { duration: '10s', target: 0 },
   ],
 };

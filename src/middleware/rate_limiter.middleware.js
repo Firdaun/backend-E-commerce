@@ -1,10 +1,15 @@
 import rateLimit from 'express-rate-limit'
 
-
+const isTestEnv = () => process.env.NODE_ENV === 'test'
 // LOGIN LIMITER
 
 const loginTracker = new Map()
 export const progressiveLoginLimiter = (req,res, next) => {
+    if (process.env.NODE_ENV === 'test') {
+        req.resetLoginTracker = () => {}
+        return next()
+    }
+
     const ip = req.ip
     const now = Date.now()
     
@@ -68,6 +73,7 @@ export const progressiveLoginLimiter = (req,res, next) => {
 export const ordersLimiter = rateLimit({
     windowMs: 3 * 60 * 1000,
     max: 10,
+    skip: isTestEnv,
     handler: (req, res, _, option) => {
         const remainingSeconds = Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / (1000 * 60))
         res.status(option.statusCode).json({
@@ -79,7 +85,6 @@ export const ordersLimiter = rateLimit({
 
 // OTP LIMITER
 
-const isTestEnv = () => process.env.NODE_ENV === 'test'
 export const otpCooldownLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 1,

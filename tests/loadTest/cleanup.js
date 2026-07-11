@@ -23,7 +23,6 @@ async function cleanUpTestOrders() {
     } catch (error) {
         console.error("❌ Gagal melakukan cleanup:", error);
     } finally {
-        // Putuskan koneksi agar script selesai dengan rapi
         await prismaClient.$disconnect();
     }
 }

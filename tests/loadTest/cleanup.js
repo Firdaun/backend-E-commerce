@@ -13,7 +13,6 @@ async function cleanUpTestOrders() {
         });
         console.log(`✅ Berhasil menghapus ${deletedItems.count} Order Item dari keranjang test.`);
 
-        // 2. Hapus tabel Order (Sama seperti DELETE FROM Order WHERE ...)
         const deletedOrders = await prismaClient.order.deleteMany({
             where: {
                 username: 'Tester Load'

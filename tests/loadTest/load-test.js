@@ -21,7 +21,7 @@ export const options = {
   ],
 };
 
-const BASE_URL = 'http://192.168.1.7:8000/api';
+const BASE_URL = 'http://192.168.1.6:8000/api';
 
 export default function () {
   const user = users[(__VU - 1) % users.length];

@@ -10,7 +10,6 @@ async function createTesters() {
         let usersToCreate = [];
         const BATCH_SIZE = 5000;
         let totalInserted = 0;
-
         for (let i = 5104; i <= 150000; i++) {
             usersToCreate.push({
                 email: `tester${i}@mail.com`,
@@ -31,7 +30,6 @@ async function createTesters() {
                 usersToCreate = [];
             }
         }
-
         console.log(`✅ SELESAI! Berhasil membuat total ${totalInserted} akun tester baru!`);
     } catch (error) {
         console.error("❌ Gagal membuat akun:", error);
